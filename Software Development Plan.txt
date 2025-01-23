@@ -14,13 +14,27 @@ The scope of the project is to produce a proof of concept that meets the require
 Question:  Is it OK to use a local machine or are extra marks available for deploying to a public server?
 Broadly speaking, this means that SNP data will be stored in a local database and will be accessed by a web interface. The objectives are set out in the project over view document.
 
+# Tasks 
+1. Set up the project structure – directories 
+2. Configure URL routes for the pages 
+3. Create a database to store SNP data, genomic coordinates, gene names, association test results (p-values), and summary statistics for populations etc
+4. Build the Search Functionality: Create search options for the user to input query. When a user submits a query, fetch matching SNP data from the database and display results (SNP name, genomic position, p-values, mapped genes). Handle empty or no results: Return a message or handle cases where no data is found.
+5. Display Results – SNP details, if a mapped gene is returned, provide an option for the user to click/select it and view more details, plot summary statistics of positive selection, provide a link to download a text file with summary statistics
+6. Generate plots to visualise summary statistics 
+7. Allow the user to select a mapped gene of interest and fetch gene information. Show information like the gene’s biological function, pathways, and associated diseases.
+8. Build HTML templates for the search form, results display, and detailed gene information page.
+9. Test individual components
+10. Documentation 
+11. Presentation 
+
+
 # Architecture and Tools
 Data will be stored in a SQlite database according to the schema in annex A.
 The Flask web server will be used to host the web pages, which will allow the user to interrogate the database.
 Code and document management for the project will be performed by GitHub.
 
 # Resources and time line 
-Resources available are the team members: Showlin UDDIN (SU), Kat CHAN (KC), Mihails PERMJAKOVS (MP), Burhan AHMED (BA) and Japhet MINDANA (JM).   Teaching resources are provided by five 40 minute weekly tutorials.  
+Resources available are the team members: Rafa UDDIN (RU), Joseph CHAN (KC), Mihails PERMJAKOVS (MP), Burhan AHMED (BA) and Japhet MINDANA (JM).   Teaching resources are provided by five 40 minute weekly tutorials.  
 Project commencement is 23rd January with final submissions on 6th March and presentations on 7th March.
 
 # Roles and responsibilities
