@@ -1,0 +1,68 @@
+# Software Development Plan
+# Bionic Beavers
+
+# Project Overview
+The aim of the project is defined in the project overview document. Namely
+The aim of your project is to build a web application that can retrieve information on single
+nucleotide polymorphisms (SNPs) associated with T2D and integrate them with population
+genomic and functional data. The web application should also be capable to produce informative
+plots and analyses in this regard. The web application should return results which are presented in a
+manner that will help answer biological questions.
+
+# Scope and Objective
+The scope of the project is to produce a proof of concept that meets the requirements of the project, it is not to produce a publicly available end-user product.  As such it will be deployed on a local machine and made available on the public web.
+Question:  Is it OK to use a local machine or are extra marks available for deploying to a public server?
+Broadly speaking, this means that SNP data will be stored in a local database and will be accessed by a web interface. The objectives are set out in the project over view document.
+
+# Architecture and Tools
+Data will be stored in a SQlite database according to the schema in annex A.
+The Flask web server will be used to host the web pages, which will allow the user to interrogate the database.
+Code and document management for the project will be performed by GitHub.
+
+# Resources and time line 
+Resources available are the team members: Showlin UDDIN (SU), Kat CHAN (KC), Mihails PERMJAKOVS (MP), Burhan AHMED (BA) and Japhet MINDANA (JM).   Teaching resources are provided by five 40 minute weekly tutorials.  
+Project commencement is 23rd January with final submissions on 6th March and presentations on 7th March.
+
+# Roles and responsibilities
+Responsibilities are to be divided up as follows between the team members.
+
+Team Leader, a single person responsible for coordinating the work of the team and ensuring deadlines are met.  This person also participates in the other tasks.
+Web development
+Data base development
+Data research:		
+Graphs and plotting
+Data presentation and summary statistics
+GitHub setup
+Testing
+Presentation planning
+Documentation
+Question: There is no information on what documentation is required. Is this user instructions, a system architecture document, explanation of how the software works?
+
+# Dependencies and Steps
+For Tutorial 1
+Produce this software development plan
+Identify data to used
+Set up GitHub for the team
+All team members have SQLite, Flask and GitHub Desktop installed on their laptops.
+
+# For Tutorial 2
+Database created and data imported.  Tested locally using simple SQL commands.  Deployment instruction provided on GitHub.
+First draft of web pages developed using standalone data.
+
+# For Tutorial 3 
+All team members have database loaded on their laptops.
+Fully developed web pages deployed to interrogate the database.
+
+# For Tutorial 4
+Web pages extended for provide all functionality defined in the project document.
+Testing complete.
+
+# For Tutorial 5
+Documentation produced.
+Software deployed as a release to GitHub.
+Code Freeze.
+First draft of presentation produced.
+
+1 Week Later
+Presentation fully complete and practiced by the team.
+Presentation to the marking board.
