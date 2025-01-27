@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>T2D SNP Analysis Tool</title>
+</head>
+<body>
+    <h1>Type 2 Diabetes SNP Analysis Tool</h1>
+
+    <form method="POST" action="/search">
+        <select name="search_type">
+            <option value="rs">Search by RS number</option>
+            <option value="coordinates">Search by Coordinates</option>
+            <option value="gene">Search by Gene Name</option>
+        </select>
+
+        <input type="text" name="search_term">
+        <input type="submit" value="Search">
+    </form>
+</body>
+</html>
