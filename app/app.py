@@ -4,10 +4,10 @@ from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Regexp, ValidationError
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'  # Change this in production
+app.config['SECRET_KEY'] = 'secret-key-here'  # change to more secure one later
 
 def validate_search_term(form, field):
-    print(f"Validating search term: {field.data} for type: {form.search_type.data}")  # Add this line
+    print(f"Validating search term: {field.data} for type: {form.search_type.data}")
     if form.search_type.data == 'rs':
         if not Regexp('^rs\d+$').regex.match(field.data):
             raise ValidationError('RS numbers must start with "rs" followed by numbers only')
@@ -28,7 +28,7 @@ class SNPSearchForm(FlaskForm):
     search_term = StringField('Search Term:',
         validators=[
             InputRequired(),
-            validate_search_term  # Add our custom validator
+            validate_search_term  
         ])
     submit = SubmitField('Search')
 
