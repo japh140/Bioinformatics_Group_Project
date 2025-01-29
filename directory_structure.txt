@@ -24,14 +24,14 @@ BIO727P/
 │   │   ├── plot.html
 │   │   ├── download.html
 │   │   ├── gene_info.html
+│   ├── data/
+│   ├── snp_associations
+│   ├── selection_stats
+│   ├── gene_annotations
 ├── tests/
 │   ├── test_1.py
 │   ├── test_2.py
 │   ├── test_3.py
-├── data/
-│   ├── snp_associations
-│   ├── selection_stats
-│   ├── gene_annotations
 ├── requirements.txt
 └── run.py
 
