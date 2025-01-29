@@ -27,7 +27,7 @@ class SNPSearchForm(FlaskForm):
     search_term = StringField('Search Term:',
         validators=[
             InputRequired(),
-            validate_search_term  # Add our custom validator
+            validate_search_term 
         ])
     submit = SubmitField('Search')
 
