@@ -2,94 +2,94 @@
 
 BIO727P/
 ├── app/
-│   ├── __init__.py                   # App factory and blueprint registration
-│   ├── config.py                     # Configuration settings
-│   ├── blueprints/                   # Directory for all blueprints
-│   │   ├── snp_query/                # Queries for SNP information by rsID, genomic coordinates, or gene names.
-│   │   │   ├── snp_routes.py         # A single route that handles the search for SNPs using different parameters and retrieval of info
-│   │   │   ├── snp_db.py            # Model for SNP information and summary statistics 
-│   │   │   ├── posel_db.py             # Model for Positive Selection Summary Statistics 
-│   │   ├── gene_info/                # Blueprint for gene info 
-│   │   │   ├── gene_routes.py        # A route to fetch the mapped gene info 
-│   │   │   ├── gene_db.py           # Fetch information from external database? 
-│   │   ├── download/                 # Blueprint for download button 
-│   │   │    ├── file_download.py    # Download button for summary statistics (avg, std dev)
-│   │   │    ├── model.py             # snp_query and posi_stat?
-│   │   ├── plot/                     # Plotting and visualising summary stats
-│   │   │   ├── plot_routes.py        # Interactivity, live updates, customisation? maybe split them into different files 
-│   │   │   ├── plot_db.py            # Database to store summary stats for plotting 
-│   │   ├── population/               # Description of population (geographical and sampling location)
-│   │   │   ├── population_routes.py         # A route to retrieve population information 
-│   │   │   ├── population_db.py       # Database to store population information 
-│   └── models.py                      # Shared database models: download and snp query will use the same table?
-├── tests/                             # Unit and integration tests
-│   ├── test_1.py                     # Tests 
-│   ├── test_2.py                     # Tests 
-│   ├── test_3.py                     # Tests 
-├── requirements.txt                   # Project dependencies
-└── run.py                             # Entry point to run the app
+│   ├── __init__.py
+│   ├── config.py
+│   ├── Static/
+│   │   ├── main.css         
+│   │   ├── plot.css
+│   ├── blueprints/
+│   │   ├── snp_query.py
+│   │   ├── gene_info.py
+│   │   ├── download.py
+│   │   ├── population.py
+│   └── schemas/
+│   │   ├── snp_schema
+│   │   ├── selection_schema
+│   │   ├── gene_schema
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── index.html
+│   │   ├── results.html
+│   │   ├── error.html
+│   │   ├── plot.html
+│   │   ├── download.html
+│   │   ├── gene_info.html
+├── tests/
+│   ├── test_1.py
+│   ├── test_2.py
+│   ├── test_3.py
+├── data/
+│   ├── snp_associations
+│   ├── selection_stats
+│   ├── gene_annotations
+├── requirements.txt
+└── run.py
+
+
+## Configuration Management (config.py):
+
+Should contain:
+Database URI (for connecting to SQLite).
+Flask environment (development, production).
+Any API keys, secret keys, or configurations you might need for deployment.
 
 
 
+## snp_query.py (Blueprint for SNP Query)
+Purpose: This blueprint handles SNP queries based on user input. Users can search by SNP ID, genomic coordinates, or gene name to retrieve relevant SNP information.
 
-# Databases
+Routes:
+/search_snp – This route handles SNP searches by rsID (e.g., "rs1234").
+/search_coordinates – Handles searches by genomic coordinates (e.g., "chr10:100000-101000").
+/search_gene – Handles searches by gene name (e.g., "MYGENE").
+
+Views: The view functions will use the database models to query the SNP_Associations and Selection_stats table and fetch results based on the search type.
+Query SNPs by rsID, gene name, or genomic coordinates.
+Return SNP name, position, p-value, mapped gene, and selection statistics.
+Handle cases where no results are found.
 
 
-1. SNP Information
-A table to store the SNP information include SNP names, genomic coordinates (chromosome, start, end), and possibly mapped gene names.
+## gene_info.py (Blueprint for Gene Information)
+Purpose: Displays information about genes related to the SNPs. This blueprint handles detailed gene information like gene ontology (GO) terms and biological pathways associated with a gene.
 
-Table: snp_db
+Routes:
+/gene_info/<gene_name> – Displays detailed gene-related information for a given gene (e.g., GO terms, biological pathways).
 
-snp_id (Primary Key)
-rs_value (SNP identifier)
-chromosome
-start_position (Genomic start position)
-end_position (Genomic end position)
-mapped_gene (Gene associated with the SNP, if any)
-p_value (P-value from the association test)
+Views: This route will query gene-related data from the gene_annotations database, and display GO terms or pathway data.
 
-2. Positive Selection Summary Statistics
-A table to store summary statistics for positive selection for each SNP, for different populations. This could be a table with multiple entries per SNP (i.e., multiple summary statistics for the same SNP).
 
-Table: posel_db
+## download.py (Blueprint for Download Functionality)
+Purpose: Handles the downloading of SNP selection statistics and summary statistics in CSV/TSV formats.
 
-stat_id (Primary Key)
-snp_id (Foreign Key to snp_info table)
-population 
-stat_type (e.g., Fst, Tajima's D, etc.)
-statistic_value
-statistic_description
+Routes:
+/download/selection_stats – Provides a CSV/TSV download of selection statistics for SNPs.
+/download/summary_stats – Provides a CSV/TSV download for summary statistics (e.g., mean, stdev).
 
-3. Gene Information
-Functional or ontology terms to describe genes. Related to the mapped_gene column in the snp_info table.
+Views:
+Generate the requested data file (CSV or TSV) and serve it to the user as a downloadable file.
 
-Table: gene_db
 
-gene_id (Primary Key)
-gene_name 
-ontology_term
+## population.py (Blueprint for Population-Based Visualizations)
+Purpose: Handles visualizations and descriptive information for different populations (geography, sample size, etc.), and displays plots of positive selection statistics.
 
-4. Population Information
-Descriptive information about populations (such as geographical sampling locations)
+Routes:
+/population_visualization – A route to select a population and view its selection statistics across SNPs.
+/population_info/<population> – Displays descriptive information about the selected population (e.g., geography, sampling locations).
 
-Table: population_db
+Views:
+Visualize selection statistics for SNPs across regions using plots like bar charts or line plots.
+Display information about the population (e.g., geographical location, sample size).
 
-population_id (Primary Key)
-population_name
-sampling_location (Geographical location where the population was sampled)
-population_size 
-study_reference ?
 
-5. Plot Data
-Dynamic plotting and visualising summary statistics across genomic regions.
 
-Table: plot_db
-
-plot_id (Primary Key)
-snp_id (Foreign Key to snp_info table)
-population_id (Foreign Key to population_info table)
-region_start (Start of genomic region)
-region_end (End of genomic region)
-summary_statistic_value (The summary statistic value to be plotted)
-plot_type (Type of plot, e.g., "heatmap", "scatter", etc.)
 
