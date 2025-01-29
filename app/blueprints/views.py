@@ -6,7 +6,7 @@ from wtforms.validators import InputRequired, Regexp, ValidationError
 snp_bp = Blueprint('snp_query', __name__)
 
 def validate_search_term(form, field):
-    print(f"Validating search term: {field.data} for type: {form.search_type.data}")  # Add this line
+    print(f"Validating search term: {field.data} for type: {form.search_type.data}")
     if form.search_type.data == 'rs':
         if not Regexp('^rs\d+$').regex.match(field.data):
             raise ValidationError('RS numbers must start with "rs" followed by numbers only')
