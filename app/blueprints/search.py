@@ -6,6 +6,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
+# Define the Blueprint for 'search'
+search_bp = Blueprint('search', __name__)
+
 class dbclass(object):
     def __init__(db):
         db.dbconnection = ''
