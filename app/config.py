@@ -2,22 +2,13 @@ import os
 
 class Config:
     # Flask base config
-    SECRET_KEY = os.environ.get('SECRET_KEY')
-    SESSION_COOKIE_SECURE = True
-    DEBUG = True
-    CSRF_ENABLED = True
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key')  # Required for Flask-WTF forms
+    DEBUG = True  # Enable debug mode
+    CSRF_ENABLED = True  # Enable CSRF protection
 
-    # Database settings (Using Binds for multiple DBs)
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_BINDS = {
-        'snp_data': 'sqlite:///data/snp_data.db',
-        'selection_stats': 'sqlite:///data/selection_stats.db',
-        'gene_annotations': 'sqlite:///data/gene_annotations.db'
-    }
+    # Database settings
+    DATABASE_PATH = os.path.join(os.path.dirname(__file__), '..', 'project.db')  # Path to the SQLite database
 
-    # Custom settings
-    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
-    
     # Logging config
     LOGGING_LEVEL = 'DEBUG'
     LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -30,23 +21,12 @@ class Config:
                             level=app.config['LOGGING_LEVEL'],
                             format=app.config['LOGGING_FORMAT'])
 
-
 class DevelopmentConfig(Config):
     DEBUG = True
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_BINDS = {
-        'snp_data': os.environ.get('SNP_DATABASE_URL'),
-        'selection_stats': os.environ.get('SELECTION_DATABASE_URL'),
-        'gene_annotations': os.environ.get('GENE_DATABASE_URL')
-    }
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_BINDS = {
-        'snp_data': 'sqlite:///data/test_snp_data.db',
-        'selection_stats': 'sqlite:///data/test_selection_stats.db',
-        'gene_annotations': 'sqlite:///data/test_gene_annotations.db'
-    }
-
+    DATABASE_PATH = os.path.join(os.path.dirname(__file__), '..', 'test_project.db')  # Test database
