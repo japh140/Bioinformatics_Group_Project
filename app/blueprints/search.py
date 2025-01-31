@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import pandas as pd
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, Blueprint
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
