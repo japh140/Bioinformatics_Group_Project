@@ -71,5 +71,3 @@ def protein(search_name):
     except:
         return "We don't have any information about %s." % search_name
 
-if __name__ == '__main__':
-    app.run(debug=True)
