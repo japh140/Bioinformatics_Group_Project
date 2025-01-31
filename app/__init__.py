@@ -18,6 +18,6 @@ def create_app(test_config=None):
 
     # Register the blueprint
     from app.blueprints.search import search_bp
-    app.register_blueprint(search_bp)
+    app.register_blueprint(search_bp, url_prefix='/search')
 
     return app
