@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gene Information</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .gene-info { margin-bottom: 20px; }
+        .gene-info h2 { color: #2c3e50; }
+        .gene-info p { margin: 5px 0; }
+        .gene-info .label { font-weight: bold; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+    <div class="gene-info">
+        <h2>Gene Information</h2>
+        <p><span class="label">Gene Symbol:</span> <span id="gene-symbol">-</span></p>
+        <p><span class="label">Gene ID:</span> <span id="gene-id">-</span></p>
+        <p><span class="label">Pathway:</span> <span id="pathway">-</span></p>
+        <p><span class="label">GO Term:</span> <span id="go-term">-</span></p>
+        <p><span class="label">Category:</span> <span id="category">-</span></p>
+        <p class="error" id="error-message"></p>
+    </div>
+
+    <script>
+        // Function to fetch gene information from the backend
+        async function fetchGeneInfo(geneSymbol) {
+            try {
+                const response = await fetch(`/api/gene-info?gene_symbol=${geneSymbol}`);
+                if (!response.ok) {
+                    throw new Error('Gene not found');
+                }
+                const data = await response.json();
+                document.getElementById('gene-symbol').textContent = data.gene_symbol;
+                document.getElementById('gene-id').textContent = data.gene_id;
+                document.getElementById('pathway').textContent = data.pathway;
+                document.getElementById('go-term').textContent = data.go_term;
+                document.getElementById('category').textContent = data.category;
+                document.getElementById('error-message').textContent = '';
+            } catch (error) {
+                document.getElementById('error-message').textContent = error.message;
+                // Clear previous data
+                document.getElementById('gene-symbol').textContent = '-';
+                document.getElementById('gene-id').textContent = '-';
+                document.getElementById('pathway').textContent = '-';
+                document.getElementById('go-term').textContent = '-';
+                document.getElementById('category').textContent = '-';
+            }
+        }
+
+        // Extract the gene_symbol from the URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const geneSymbol = urlParams.get('gene_symbol');
+
+        // Fetch and display gene information
+        if (geneSymbol) {
+            fetchGeneInfo(geneSymbol);
+        } else {
+            document.getElementById('error-message').textContent = 'Gene symbol not provided in URL.';
+        }
+    </script>
+
+</body>
+</html>
