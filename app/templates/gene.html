@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gene Details: {{ gene_symbol }}</title>
+</head>
+<body>
+    <h1>Gene Details: {{ gene_symbol }}</h1>
+
+    {% if gene_info %}
+        <h2>Found Details:</h2>
+        {% for info in gene_info %} <!-- display all rows for the gene symbol -->
+            <div class="gene-info-item">
+                <p>Gene Symbol: {{ info.gene_symbol }}</p>
+                <p>Gene ID: {{ info.gene_id }}</p>
+                <p>Pathway: {{ info.pathway }}</p>
+                <p>GO Term: {{ info.go_term }}</p>
+                <p>Category: {{ info.category }}</p>
+            </div>
+            <hr> <!-- add a line between gene info rows -->
+        {% endfor %}
+    {% else %}
+        <p>No details found for this gene.</p>
+    {% endif %}
+
+    <a href="/">Back to Search</a>
+</body>
+</html>
