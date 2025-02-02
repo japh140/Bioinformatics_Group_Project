@@ -1,23 +1,12 @@
-import os
 from flask import Flask
-from app.config import Config
+from blueprints.snp_query.views import snp_bp
+from blueprints.db_api.db_api import db_api
+from blueprints.gene import gene_bp
+from config import Config
 
-def create_app(test_config=None):
-    # Create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+app = Flask(__name__)
+app.config.from_object(Config)
 
-    # Set up default config from Config class
-    app.config.from_object(Config)
-
-    if test_config is not None:
-        # Load the test config if passed in
-        app.config.from_mapping(test_config)
-
-    # Ensure the instance folder exists
-    os.makedirs(app.instance_path, exist_ok=True)
-
-    # Register the blueprint
-    from app.blueprints.search import search_bp
-    app.register_blueprint(search_bp, url_prefix='/search')
-
-    return app
+app.register_blueprint(snp_bp)
+app.register_blueprint(db_api)
+app.register_blueprint(gene_bp)
