@@ -19,7 +19,8 @@
                 <p>Mapped Genes:
                     {% for gene in result.mapped_genes %}
                         {% if gene %}
-                        <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
+                            <!-- TODO: Rafa please replace this with your gene info blueprint route -->
+                            <a href="#" onclick="alert('Gene information page coming soon!')">{{ gene }}</a>
                             {%- if not loop.last %}, {% endif %}
                         {% endif %}
                     {% endfor %}
