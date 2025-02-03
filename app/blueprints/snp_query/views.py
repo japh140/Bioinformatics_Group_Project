@@ -7,18 +7,22 @@ from app.blueprints.db_api.db_api import db
 
 snp_bp = Blueprint('snp_query', __name__)
 
-def validate_search_term(form, field): # check if search terms match required pattern
-    print(f"Validating search term: {field.data} for type: {form.search_type.data}")
-    if form.search_type.data == 'rs': # regexes need to match rs, chromosome coordinate, and gene name format
-        if not Regexp('^rs\d+$').regex.match(field.data):
-            raise ValidationError('RS numbers must start with "rs" followed by numbers only')
-    if form.search_type.data == 'coordinates':
-        if not (Regexp('^chr([1-9]|1[0-9]|2[0-2]|[XYM]):\d+-\d+$').regex.match(field.data) or
-                Regexp('^chr([1-9]|1[0-9]|2[0-2]|[XYM]):\d+$').regex.match(field.data)):
-            raise ValidationError('Format must be either "chrN:position" or "chrN:start-end" (N = 1-22, X, Y, M)')
-    if form.search_type.data == 'gene':
-        if not Regexp('^[A-Za-z][A-Za-z0-9_-]*$').regex.match(field.data):
-            raise ValidationError('Invalid gene name. Use only letters, numbers, underscores, or hyphens, starting with a letter.')
+def validate_search_term(form, field):
+    try:
+        if form.search_type.data == 'rs':
+            if not Regexp('^rs\d+$').regex.match(field.data):
+                raise ValidationError('RS numbers must start with "rs" followed by numbers only')
+        if form.search_type.data == 'coordinates':
+            if not (Regexp('^chr([1-9]|1[0-9]|2[0-2]|[XYM]):\d+-\d+$').regex.match(field.data) or
+                    Regexp('^chr([1-9]|1[0-9]|2[0-2]|[XYM]):\d+$').regex.match(field.data)):
+                raise ValidationError('Format must be either "chrN:position" or "chrN:start-end" (N = 1-22, X, Y, M)')
+        if form.search_type.data == 'gene':
+            if not Regexp('^[A-Za-z][A-Za-z0-9_-]*$').regex.match(field.data):
+                raise ValidationError('Invalid gene name. Use only letters, numbers, underscores, or hyphens, starting with a letter.')
+    except ValidationError:
+        raise
+    except Exception:
+        raise ValidationError('Invalid input format')
 
 class SNPSearchForm(FlaskForm):
     search_type = SelectField('Search Type',
@@ -86,12 +90,12 @@ def search_results(search_type, search_term):
             return f"No results found for {search_term}"
 
     except ValueError as ve:
-        print(f"Validation error: {ve}")
+        # print(f"Validation error: {ve}")
         return f"Invalid search parameters: {str(ve)}"
     except IndexError:
         return f"No results found for {search_term}"
     except Exception as e:
-        print(f"Error processing results: {e}")
+        # print(f"Error processing results: {e}")
         return f"Error processing search for {search_term}"
     finally:
         db.db_close()
