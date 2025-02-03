@@ -25,7 +25,7 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        print(query)
+        # print(query)
         df = pd.read_sql_query(query, db.dbconnection)
         return df
 
@@ -36,7 +36,7 @@ class DatabaseClass:
                  'WHERE mapped_gene LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        print(query)
+        # print(query)
         df = pd.read_sql_query(query, db.dbconnection)
         return df
 
@@ -47,7 +47,7 @@ class DatabaseClass:
                  'WHERE chromosome = "{}" AND position >= {} AND position <= {} '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(chromosome, start, end)
-        print(query)
+        # print(query)
         df = pd.read_sql_query(query, db.dbconnection)
         return df
     
@@ -58,7 +58,7 @@ class DatabaseClass:
         + 'WHERE gene_symbol LIKE ' + '"%' + querystring + '%" ' \
         + 'ORDER BY gene_symbol ' \
         + 'LIMIT 20'
-        print(query)
+        # print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df
 
@@ -69,7 +69,7 @@ class DatabaseClass:
         + 'WHERE gene_id LIKE ' + '"%' + querystring + '%" ' \
         + 'ORDER BY gene_id ' \
         + 'LIMIT 20'
-        print(query)
+        # print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df
 
@@ -80,7 +80,7 @@ class DatabaseClass:
         + 'WHERE snp_id LIKE ' + '"%' + querystring + '%" ' \
         + 'ORDER BY snp_id ' \
         + 'LIMIT 20'
-        print(query)
+        # print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df   
 
