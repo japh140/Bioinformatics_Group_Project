@@ -1,7 +1,8 @@
 from flask import Flask
-from app.blueprints.snp_query.views import snp_bp
-from app.blueprints.db_api.db_api import db_api
-from app.blueprints.snp_query.gene import gene_bp
+from blueprints.snp_query.views import snp_bp
+from blueprints.snp_query.gene import gene_bp
+from blueprints.db_api.db_api import db_api
+
 from config import Config
 
 app = Flask(__name__)
