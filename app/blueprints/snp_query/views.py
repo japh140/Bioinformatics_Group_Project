@@ -3,7 +3,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Regexp, ValidationError
 
-from ..db_api.db_api import db
+try:
+    # absolute import version
+    from app.blueprints.db_api.db_api import db
+except ImportError:
+    # relative import version
+    from ..db_api.db_api import db
 
 snp_bp = Blueprint('snp_query', __name__)
 
