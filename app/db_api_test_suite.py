@@ -195,8 +195,51 @@ print(df)
 assert len(df)==0,                                  "\033[91m Error18 : get_snp_and_gene_by_snp \033[0m"
 assert len(df.columns)==15,                         "\033[91m Error19 : get_snp_and_gene_by_snp \033[0m"
 
+
+#
+# Test get_summary_stats_by_population
+#
+print('\n\033[94m TESTING: get_summary_stats_by_population \033[0m')
+df = db.get_summary_stats_by_population('Bengali')
+print(df)
+assert len(df)==1,                              "\033[91m Error1 : get_summary_stats_by_population \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error2 : get_summary_stats_by_population \033[0m"
+assert df.columns[0]=='population',             "\033[91m Error3 : get_summary_stats_by_population \033[0m"
+assert df.columns[1]=='tajimas_d',              "\033[91m Error4 : get_summary_stats_by_population \033[0m"
+assert df.columns[2]=='xp_ehh',                 "\033[91m Error5 : get_summary_stats_by_population \033[0m"
+assert df.columns[3]=='his',                    "\033[91m Error6 : get_summary_stats_by_population \033[0m"
+assert df.columns[4]=='nucleotide_diversity',   "\033[91m Error7 : get_summary_stats_by_population \033[0m"
+
+
+df = db.get_summary_stats_by_population('Gaijn@#_+')
+print(df)
+assert len(df)==0,                              "\033[91m Error12 : get_summary_stats_by_population \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error13 : get_summary_stats_by_population \033[0m"
+
+
+#
+# Test get_summary_stats_by_snp
+#
+print('\n\033[94m TESTING: get_summary_stats_by_snp \033[0m')
+df = db.get_summary_stats_by_snp('rs12')
+print(df)
+assert len(df)==20,                             "\033[91m Error1 : get_summary_stats_by_snp \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error2 : get_summary_stats_by_snp \033[0m"
+assert df.columns[0]=='population',             "\033[91m Error3 : get_summary_stats_by_snp \033[0m"
+assert df.columns[1]=='tajimas_d',              "\033[91m Error4 : get_summary_stats_by_snp \033[0m"
+assert df.columns[2]=='xp_ehh',                 "\033[91m Error5 : get_summary_stats_by_snp \033[0m"
+assert df.columns[3]=='his',                    "\033[91m Error6 : get_summary_stats_by_snp \033[0m"
+assert df.columns[4]=='nucleotide_diversity',   "\033[91m Error7 : get_summary_stats_by_snp \033[0m"
+
+
+df = db.get_summary_stats_by_population('Gaijn@#_+')
+print(df)
+assert len(df)==0,                              "\033[91m Error12 : get_summary_stats_by_snp \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error13 : get_summary_stats_by_snp \033[0m"
+
+
 #
 # Close Database Connection
 #
 db.db_close()
-print ('\033[92m EVERYTHING IS WORKING \033[0m')
+print ('\n\033[92m EVERYTHING IS WORKING \033[0m')

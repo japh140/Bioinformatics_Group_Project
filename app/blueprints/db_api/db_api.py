@@ -105,6 +105,27 @@
 ##          ORDER BY        snp_id
 ##          LIMIT           20
 ##
+##
+## def get_summary_stats_by_population(query_string):
+##      query_string:       population to query
+##      return:             dataframe of results (empty if no results)
+##          SELECT:         population, tajimas_d, xp_ehh, his, nucleotide_diversity 
+##          FROM            Selection_Stats
+##          WHERE:          population LIKE "%<query_string>%""
+##          ORDER BY        population
+##          LIMIT           20
+##
+##
+## def get_summary_stats_by_snp(query_string):
+##      query_string:       population to query
+##      return:             dataframe of results (empty if no results)
+##          SELECT:         Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity
+##          FROM            SNP_Associations INNER JOIN Selection_Stats ON SNP_Associations.population = Selection_Stats.population
+##          WHERE:          snp_id LIKE "%<query_string>%""
+##          ORDER BY        snp_id
+##          LIMIT           20
+##
+
 
 import sqlite3
 import pandas as pd
@@ -132,7 +153,7 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query, db.dbconnection)
         return df
 
@@ -143,7 +164,7 @@ class DatabaseClass:
                  'WHERE mapped_gene LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query, db.dbconnection)
         return df
 
@@ -154,7 +175,7 @@ class DatabaseClass:
                  'WHERE chromosome = "{}" AND position >= {} AND position <= {} '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(chromosome, start, end)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query, db.dbconnection)
         return df
     
@@ -165,7 +186,7 @@ class DatabaseClass:
                  'WHERE gene_symbol LIKE "%{}%" ' 
                  'ORDER BY gene_symbol ' 
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df
 
@@ -176,7 +197,7 @@ class DatabaseClass:
                  'WHERE gene_id LIKE "%{}%" '
                  'ORDER BY gene_id '
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df
 
@@ -187,7 +208,7 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df   
 
@@ -199,7 +220,7 @@ class DatabaseClass:
                  'WHERE population_name LIKE "%{}%" '
                  'ORDER BY sample_name '
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df  
 
@@ -212,7 +233,7 @@ class DatabaseClass:
                  'WHERE SNP_Associations.snp_id LIKE "%{}%" '
                  'ORDER BY SNP_Associations.snp_id ' 
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df
 
@@ -225,9 +246,31 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id ' 
                  'LIMIT 20').format(query_string)
-        print(query)
+        #print(query)
         df = pd.read_sql_query(query,db.dbconnection)
         return df
 
+    @staticmethod
+    def get_summary_stats_by_population(query_string):
+        query = ('SELECT population, tajimas_d, xp_ehh, his, nucleotide_diversity '
+                 'FROM Selection_Stats '
+                 'WHERE population LIKE "%{}%" '
+                 'ORDER BY population ' 
+                 'LIMIT 20').format(query_string)
+        #print(query)
+        df = pd.read_sql_query(query,db.dbconnection)
+        return df
+
+    @staticmethod
+    def get_summary_stats_by_snp(query_string):
+        query = ('SELECT Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity '
+                 'FROM SNP_Associations '
+                 'INNER JOIN Selection_Stats ON SNP_Associations.population = Selection_Stats.population '
+                 'WHERE snp_id LIKE "%{}%" '
+                 'ORDER BY snp_id ' 
+                 'LIMIT 20').format(query_string)
+        print(query)
+        df = pd.read_sql_query(query,db.dbconnection)
+        return df
 
 db = DatabaseClass()
