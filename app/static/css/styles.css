@@ -1,12 +1,23 @@
-/* Reset and base styles */
-body {
-    margin: 0;
+/* Header styles */
+.header {
+    background-color: #2c3e50;  /* Dark blue color */
+    color: white;
     padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f5f6fa;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-/* Center everything */
+.header h1 {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.header h4 {
+    margin: 0;
+    font-weight: normal;
+}
+
+/* Container styles */
 .container {
     max-width: 600px;
     margin: 0 auto;
@@ -14,4 +25,12 @@ body {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Keep your existing body styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
 }
