@@ -4,7 +4,9 @@
     color: white;
     padding: 20px;
     text-align: center;
-    margin-bottom: 20px;
+    margin: 20px auto;  /* Add margin and auto to center */
+    max-width: 800px;  /* Make it wider than the form container */
+    border-radius: 20px;  /* Rounded corners */
 }
 
 .header h1 {
@@ -20,14 +22,70 @@
 /* Container styles */
 .container {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 20px auto;  /* Add margin to separate from header */
     padding: 20px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Keep your existing body styles */
+/* Style the dropdown */
+#search_type {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* Container styles */
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 40px;  /* Increased padding */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Form and input styles */
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;  /* This ensures padding doesn't add to width */
+}
+
+#search_type, #search_term, input[type="submit"] {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Search input specific styles */
+#search_term {
+    font-size: 16px;
+}
+
+/* Example text */
+#search-example {
+    display: block;
+    margin: 5px 0 15px 0;
+    color: #666;
+}
+
+/* Submit button */
+input[type="submit"] {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+/* Body style */
 body {
     margin: 0;
     padding: 0;
