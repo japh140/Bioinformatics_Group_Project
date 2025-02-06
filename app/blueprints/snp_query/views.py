@@ -57,7 +57,6 @@ def index():
 @snp_bp.route('/search/<search_type>/<search_term>')
 def search_results(search_type, search_term):
     try:
-        db.db_open()
         match search_type:
             case 'rs':
                 df = db.get_snp_by_id(search_term)
@@ -95,12 +94,8 @@ def search_results(search_type, search_term):
             return f"No results found for {search_term}"
 
     except ValueError as ve:
-        # print(f"Validation error: {ve}")
         return f"Invalid search parameters: {str(ve)}"
     except IndexError:
         return f"No results found for {search_term}"
     except Exception as e:
-        # print(f"Error processing results: {e}")
         return f"Error processing search for {search_term}"
-    finally:
-        db.db_close()

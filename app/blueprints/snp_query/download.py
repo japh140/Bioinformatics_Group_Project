@@ -15,6 +15,7 @@ def download_data():
         population = request.form.get('population', None)  # Population selected for download (if any)
 
         # Fetch summary statistics for the selected SNP and population
+        # No need for explicit db connection open/close, we use get_db() from db_api
         stats_df = db.get_summary_stats_by_snp(snp_id)
         if stats_df is None or stats_df.empty:
             return jsonify({"error": "No summary statistics found for the selected SNP"}), 404

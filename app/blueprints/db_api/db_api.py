@@ -129,7 +129,7 @@
 
 import sqlite3
 import pandas as pd
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, g
 
 db_api = Blueprint('db_api', __name__)
 
@@ -138,13 +138,26 @@ class DatabaseClass:
         self.dbconnection = None
 
     @staticmethod
-    def db_open():
-        database_location = current_app.config['DATABASE_PATH']
-        db.dbconnection = sqlite3.connect(database_location)
+    def get_db():
+        """
+        Returns a database connection for the current request.
+        If the connection is already established, it will reuse it.
+        """
+        if 'dbconnection' not in g:
+            # Create a new connection for the current request
+            database_location = current_app.config['DATABASE_PATH']
+            g.dbconnection = sqlite3.connect(database_location, check_same_thread=False)
+            g.dbconnection.row_factory = sqlite3.Row  # Allow accessing columns by name
+        return g.dbconnection
 
     @staticmethod
-    def db_close():
-        db.dbconnection.close()
+    def close_db():
+        """
+        Close the database connection at the end of the request.
+        """
+        dbconnection = getattr(g, 'dbconnection', None)
+        if dbconnection is not None:
+            dbconnection.close()
 
     @staticmethod
     def get_snp_by_id(query_string):
@@ -153,8 +166,9 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query, db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -164,8 +178,9 @@ class DatabaseClass:
                  'WHERE mapped_gene LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query, db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -175,8 +190,9 @@ class DatabaseClass:
                  'WHERE chromosome = "{}" AND position >= {} AND position <= {} '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(chromosome, start, end)
-        #print(query)
-        df = pd.read_sql_query(query, db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
     
     @staticmethod
@@ -186,8 +202,9 @@ class DatabaseClass:
                  'WHERE gene_symbol LIKE "%{}%" ' 
                  'ORDER BY gene_symbol ' 
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -197,8 +214,9 @@ class DatabaseClass:
                  'WHERE gene_id LIKE "%{}%" '
                  'ORDER BY gene_id '
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -208,8 +226,9 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id '
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df   
 
     @staticmethod
@@ -220,8 +239,9 @@ class DatabaseClass:
                  'WHERE population_name LIKE "%{}%" '
                  'ORDER BY sample_name '
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df  
 
     @staticmethod
@@ -233,8 +253,9 @@ class DatabaseClass:
                  'WHERE SNP_Associations.snp_id LIKE "%{}%" '
                  'ORDER BY SNP_Associations.snp_id ' 
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -246,8 +267,9 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id ' 
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -257,8 +279,9 @@ class DatabaseClass:
                  'WHERE population LIKE "%{}%" '
                  'ORDER BY population ' 
                  'LIMIT 20').format(query_string)
-        #print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
     @staticmethod
@@ -269,8 +292,26 @@ class DatabaseClass:
                  'WHERE snp_id LIKE "%{}%" '
                  'ORDER BY snp_id ' 
                  'LIMIT 20').format(query_string)
-        print(query)
-        df = pd.read_sql_query(query,db.dbconnection)
+        
+        conn = DatabaseClass.get_db()
+        df = pd.read_sql_query(query, conn)
         return df
 
+
+# After using g.dbconnection, don't forget to close it after the request lifecycle ends:
+def close_app_connection(exception=None):
+    dbconnection = getattr(g, 'dbconnection', None)
+    if dbconnection is not None:
+        dbconnection.close()
+
+# Bind the close_app_connection function to be executed after each request
+from flask import current_app
+
+def init_db_teardown(app):
+    @app.teardown_request
+    def close_connection(exception=None):
+        close_app_connection(exception)
+
+
 db = DatabaseClass()
+
