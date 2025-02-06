@@ -285,6 +285,15 @@ class DatabaseClass:
         return df
 
     @staticmethod
+    def get_population_stats():
+        query = ('SELECT population, tajimas_d, xp_ehh, his, nucleotide_diversity '
+             'FROM Selection_Stats '
+             'ORDER BY population')
+        conn = db.get_db()
+        df = pd.read_sql_query(query, conn)
+        return df
+
+    @staticmethod
     def get_summary_stats_by_snp(query_string):
         query = ('SELECT SNP_Associations.snp_id, Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity '
                  'FROM SNP_Associations '
