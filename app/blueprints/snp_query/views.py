@@ -100,9 +100,9 @@ def search_results(search_type, search_term):
         return f"Invalid search parameters: {str(ve)}"
     except IndexError:
         return f"No results found for {search_term}"
-    except Exception as e:
+    #except Exception as e: # PyCharm warned me this is "too broad"; leaving for posterity
         # print(f"Error processing results: {e}")
-        return f"Error processing search for {search_term}"
+        #return f"Error processing search for {search_term}"
     finally:
         db.db_close()
 
@@ -139,4 +139,3 @@ def population_comparison():
         return f"Error retrieving population statistics: {e}"
     finally:
         db.db_close()
-    return render_template('homepage/population_comparison.html', populations=populations)
