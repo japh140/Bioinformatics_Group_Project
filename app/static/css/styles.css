@@ -4,8 +4,8 @@
     color: white;
     padding: 20px;
     text-align: center;
-    margin: 20px auto;  /* Add margin and auto to center */
-    max-width: 800px;  /* Make it wider than the form container */
+    margin: 20px auto;  /* Added margin and auto to center */
+    max-width: 800px;  /* Made it wider than the form container */
     border-radius: 20px;  /* Rounded corners */
 }
 
@@ -22,7 +22,7 @@
 /* Container styles */
 .container {
     max-width: 600px;
-    margin: 20px auto;  /* Add margin to separate from header */
+    margin: 20px auto;  /* Added margin to separate from header */
     padding: 20px;
     background-color: white;
     border-radius: 8px;
@@ -53,7 +53,7 @@
 .form-group {
     margin-bottom: 20px;
     width: 100%;
-    box-sizing: border-box;  /* This ensures padding doesn't add to width */
+    box-sizing: border-box;
 }
 
 #search_type, #search_term, input[type="submit"] {
@@ -90,5 +90,56 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+}
+.population-select {
+    margin: 20px 0;
+}
+
+.population-select label {
+    margin-right: 20px;
+    display: inline-block;
+}
+
+#statistics-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#statistics-table th,
+#statistics-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+#statistics-table th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+#statistics-table tr:nth-child(even) {
+    background-color: #f5f6fa;
+}
+#pop-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#pop-table th,
+#pop-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+#pop-table th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+#pop-table tr:nth-child(even) {
     background-color: #f5f6fa;
 }

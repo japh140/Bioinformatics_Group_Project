@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Population Statistics Comparison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h3>Select Populations to Compare:</h3>
+        <div class="population-select">
+            {% for population in populations.keys() %}
+            <label>
+                <input type="checkbox" class="population-checkbox" value="{{ population }}">
+                {{ population }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <div id="statistics-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Population</th>
+                        <th>Tajima's D</th>
+                        <th>XP-EHH</th>
+                        <th>HIS</th>
+                        <th>Nucleotide Diversity</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body-1">
+                    <!-- JavaScript will populate this -->
+                </tbody>
+            </table>
+        </div>
+        <div id="pop-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Population</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body-2">
+                <!-- JavaScript will populate this -->
+                </tbody>
+            </table>
+        </div>
+        <p>Statistics visualisation coming soon. Population descriptions are placeholder.</p>
+    </div>
+
+    <script>
+    // Store the population data from Flask
+    const populationData = {{ populations|tojson }};
+
+    function updateTable() {
+        const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
+            .map(checkbox => checkbox.value);
+
+        // Update statistics table
+        const tbody1 = document.getElementById('stats-body-1');
+        tbody1.innerHTML = ''; // Clear current table
+
+        // Update descriptions table
+        const tbody2 = document.getElementById('stats-body-2');
+        tbody2.innerHTML = ''; // Clear current table
+
+        selectedPopulations.forEach(pop => {
+            const stats = populationData[pop];
+
+            // Create row for statistics table
+            const row1 = document.createElement('tr');
+            row1.innerHTML = `
+                <td>${pop}</td>
+                <td>${stats.tajimas_d}</td>
+                <td>${stats.xp_ehh}</td>
+                <td>${stats.his}</td>
+                <td>${stats.nucleotide_diversity}</td>
+            `;
+            tbody1.appendChild(row1);
+
+            // Create row for descriptions table
+            const row2 = document.createElement('tr');
+            row2.innerHTML = `
+                <td>${pop}</td>
+                <td>${stats.description}</td>
+            `;
+            tbody2.appendChild(row2);
+        });
+    }
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.population-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateTable);
+    });
+    </script>
+</body>
+</html>

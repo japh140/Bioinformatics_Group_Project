@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, url_for, redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Regexp, ValidationError
+import pandas as pd
 
 try:
     # absolute import version
@@ -104,3 +105,38 @@ def search_results(search_type, search_term):
         return f"Error processing search for {search_term}"
     finally:
         db.db_close()
+
+
+@snp_bp.route('/population-comparison')
+def population_comparison():
+    try:
+        db.db_open()
+        query = ('SELECT population, tajimas_d, xp_ehh, his, nucleotide_diversity '
+                 'FROM Selection_Stats '
+                 'ORDER BY population')
+        df = pd.read_sql_query(query, db.dbconnection)
+
+        population_info = {
+            'Punjabi': 'Sample population from Punjab region (exact sampling location TBD)',
+            'Telugu': 'Sample population of Telugu speakers (exact sampling location TBD)',
+            'Bengali': 'Sample population from Bengal region (exact sampling location TBD)',
+            'Gujarati': 'Sample population from Gujarat region (exact sampling location TBD)',
+            'Tamil': 'Sample population of Tamil speakers (exact sampling location TBD)'
+        }
+
+        populations = {}
+        for _, row in df.iterrows():
+            populations[row.population] = {
+                'description': population_info[row.population],
+                'tajimas_d': row.tajimas_d,
+                'xp_ehh': row.xp_ehh,
+                'his': row.his,
+                'nucleotide_diversity': row.nucleotide_diversity
+            }
+
+        return render_template('homepage/population_comparison.html', populations=populations)
+    except Exception as e:
+        return f"Error retrieving population statistics: {e}"
+    finally:
+        db.db_close()
+    return render_template('homepage/population_comparison.html', populations=populations)
