@@ -26,30 +26,20 @@ def download_data():
 
         # Prepare the data for the CSV file
         output = io.StringIO()
-        writer = csv.writer(output)
-
-        # Write the header
-        writer.writerow(['SNP ID', 'Population', 'Tajimas D', 'XP-EHH', 'HIS', 'Nucleotide Diversity'])
+        output.write("SNP ID | Population | Tajima's D | XP-EHH | HIS | Nucleotide Diversity\n")
 
         # Write the data rows for the selected SNP
         for _, row in stats_df.iterrows():
-            writer.writerow([
-                row.get('snp_id', ''),
-                row.get('population', ''),
-                row.get('tajimas_d', ''),
-                row.get('xp_ehh', ''),
-                row.get('his', ''),
-                row.get('nucleotide_diversity', '')
-            ])
+            output.write(f"{row.get('snp_id', '')} | {row.get('population', '')} | {row.get('tajimas_d', '')} | {row.get('xp_ehh', '')} | {row.get('his', '')} | {row.get('nucleotide_diversity', '')}\n")
 
         # Prepare the file for download
         output.seek(0)
         return send_file(
-            io.BytesIO(output.getvalue().encode()),
-            mimetype='text/csv',
+            io.BytesIO(output.getvalue().encode()),  # Convert to bytes for sending
+            mimetype='text/plain',  # Set MIME type to text
             as_attachment=True,
-            download_name=f'{snp_id}_summary_statistics.csv'
+            download_name=f'{snp_id}_summary_statistics.txt'  # Specify .txt extension
         )
-    
+
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
