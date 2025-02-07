@@ -58,7 +58,6 @@ def index():
 @snp_bp.route('/search/<search_type>/<search_term>')
 def search_results(search_type, search_term):
     try:
-        db.db_open()
         match search_type:
             case 'rs':
                 df = db.get_snp_by_id(search_term)
@@ -96,25 +95,16 @@ def search_results(search_type, search_term):
             return f"No results found for {search_term}"
 
     except ValueError as ve:
-        # print(f"Validation error: {ve}")
         return f"Invalid search parameters: {str(ve)}"
     except IndexError:
         return f"No results found for {search_term}"
-    #except Exception as e: # PyCharm warned me this is "too broad"; leaving for posterity
-        # print(f"Error processing results: {e}")
-        #return f"Error processing search for {search_term}"
-    finally:
-        db.db_close()
-
+    except Exception as e:
+        return f"Error processing search for {search_term}. Please try again later."
 
 @snp_bp.route('/population-comparison')
 def population_comparison():
     try:
-        db.db_open()
-        query = ('SELECT population, tajimas_d, xp_ehh, his, nucleotide_diversity '
-                 'FROM Selection_Stats '
-                 'ORDER BY population')
-        df = pd.read_sql_query(query, db.dbconnection)
+        df = db.get_population_stats()  # This should return a DataFrame with population data
 
         population_info = {
             'Punjabi': 'Sample population from Punjab region (exact sampling location TBD)',
@@ -137,5 +127,4 @@ def population_comparison():
         return render_template('homepage/population_comparison.html', populations=populations)
     except Exception as e:
         return f"Error retrieving population statistics: {e}"
-    finally:
-        db.db_close()
+
