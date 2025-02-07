@@ -1,16 +1,15 @@
-from flask import Flask
+from flask import Flask, current_app, g
 from blueprints.snp_query.views import snp_bp
-from blueprints.db_api.db_api import db_api
+from blueprints.db_api.db_api import db_api, init_db_teardown
 from blueprints.db_api.db_api import db
 from config import Config
+
 app = Flask(__name__)
 app.config.from_object(Config)
+app.register_blueprint(db_api)
+app.app_context().push()
+init_db_teardown(app)
 
-#
-# Open Database Connection
-#
-with app.app_context():
-    db.db_open()
 
 #
 # Test get_snp_by_id()
@@ -213,8 +212,8 @@ assert df.columns[4]=='nucleotide_diversity',   "\033[91m Error7 : get_summary_s
 
 df = db.get_summary_stats_by_population('Gaijn@#_+')
 print(df)
-assert len(df)==0,                              "\033[91m Error12 : get_summary_stats_by_population \033[0m"
-assert len(df.columns)==5,                      "\033[91m Error13 : get_summary_stats_by_population \033[0m"
+assert len(df)==0,                              "\033[91m Error8 : get_summary_stats_by_population \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error9 : get_summary_stats_by_population \033[0m"
 
 
 #
@@ -224,22 +223,23 @@ print('\n\033[94m TESTING: get_summary_stats_by_snp \033[0m')
 df = db.get_summary_stats_by_snp('rs12')
 print(df)
 assert len(df)==20,                             "\033[91m Error1 : get_summary_stats_by_snp \033[0m"
-assert len(df.columns)==5,                      "\033[91m Error2 : get_summary_stats_by_snp \033[0m"
-assert df.columns[0]=='population',             "\033[91m Error3 : get_summary_stats_by_snp \033[0m"
-assert df.columns[1]=='tajimas_d',              "\033[91m Error4 : get_summary_stats_by_snp \033[0m"
-assert df.columns[2]=='xp_ehh',                 "\033[91m Error5 : get_summary_stats_by_snp \033[0m"
-assert df.columns[3]=='his',                    "\033[91m Error6 : get_summary_stats_by_snp \033[0m"
-assert df.columns[4]=='nucleotide_diversity',   "\033[91m Error7 : get_summary_stats_by_snp \033[0m"
+assert len(df.columns)==6,                      "\033[91m Error2 : get_summary_stats_by_snp \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_summary_stats_by_snp \033[0m"
+assert df.columns[1]=='population',             "\033[91m Error4 : get_summary_stats_by_snp \033[0m"
+assert df.columns[2]=='tajimas_d',              "\033[91m Error5 : get_summary_stats_by_snp \033[0m"
+assert df.columns[3]=='xp_ehh',                 "\033[91m Error6 : get_summary_stats_by_snp \033[0m"
+assert df.columns[4]=='his',                    "\033[91m Error7 : get_summary_stats_by_snp \033[0m"
+assert df.columns[5]=='nucleotide_diversity',   "\033[91m Error8 : get_summary_stats_by_snp \033[0m"
 
 
-df = db.get_summary_stats_by_population('Gaijn@#_+')
+df = db.get_summary_stats_by_snp('Gaijn@#_+')
 print(df)
-assert len(df)==0,                              "\033[91m Error12 : get_summary_stats_by_snp \033[0m"
-assert len(df.columns)==5,                      "\033[91m Error13 : get_summary_stats_by_snp \033[0m"
+assert len(df)==0,                              "\033[91m Error9 : get_summary_stats_by_snp \033[0m"
+assert len(df.columns)==6,                      "\033[91m Error10 : get_summary_stats_by_snp \033[0m"
 
 
 #
 # Close Database Connection
 #
-db.db_close()
+#db.db_close()
 print ('\n\033[92m EVERYTHING IS WORKING \033[0m')

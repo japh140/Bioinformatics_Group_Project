@@ -295,7 +295,7 @@ class DatabaseClass:
 
     @staticmethod
     def get_summary_stats_by_snp(query_string):
-        query = ('SELECT SNP_Associations.snp_id, Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity '
+        query = ('SELECT SNP_Associations.snp_id AS snp_id, Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity '
                  'FROM SNP_Associations '
                  'INNER JOIN Selection_Stats ON SNP_Associations.population = Selection_Stats.population '
                  'WHERE snp_id LIKE "%{}%" '
