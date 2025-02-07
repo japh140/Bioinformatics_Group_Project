@@ -76,6 +76,14 @@ def search_results(search_type, search_term):
                 raise ValueError(f"Invalid search type: {search_type}")
 
         if df is not None and not df.empty:
+            # Remove duplicates based on different combinations of columns:
+            # 1. SNP ID and Population
+            # 2. Gene Symbol (Mapped Gene) and Population
+            # 3. Chromosome and Population
+            df = df.drop_duplicates(subset=['snp_id', 'population'], keep='first')
+            df = df.drop_duplicates(subset=['mapped_gene', 'population'], keep='first')
+            df = df.drop_duplicates(subset=['chromosome', 'population'], keep='first')
+
             results = []
             for _, row in df.iterrows():
                 results.append({
@@ -87,10 +95,11 @@ def search_results(search_type, search_term):
                     'population': row.population,
                     'phenotype': row.phenotype
                 })
+
             return render_template('homepage/results.html',
-                                search_type=search_type,
-                                search_term=search_term,
-                                results=results)
+                                   search_type=search_type,
+                                   search_term=search_term,
+                                   results=results)
         else:
             return f"No results found for {search_term}"
 
@@ -100,6 +109,7 @@ def search_results(search_type, search_term):
         return f"No results found for {search_term}"
     except Exception as e:
         return f"Error processing search for {search_term}. Please try again later."
+
 
 @snp_bp.route('/population-comparison')
 def population_comparison():
@@ -127,4 +137,3 @@ def population_comparison():
         return render_template('homepage/population_comparison.html', populations=populations)
     except Exception as e:
         return f"Error retrieving population statistics: {e}"
-
