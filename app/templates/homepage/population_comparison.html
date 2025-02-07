@@ -6,6 +6,12 @@
 </head>
 <body>
     <div class="container">
+        <h3>Population Comparison for Search: {{ search_data }}</h3>
+        {% if message %}
+            <div class="info-message">
+                {{ message }}
+            </div>
+        {% endif %}
         <h3>Select Populations to Compare:</h3>
         <div class="population-select">
             {% for population in populations.keys() %}

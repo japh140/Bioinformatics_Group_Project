@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, url_for, redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Regexp, ValidationError
-import pandas as pd
 
 try:
     # absolute import version
@@ -111,10 +110,12 @@ def search_results(search_type, search_term):
         return f"Error processing search for {search_term}. Please try again later."
 
 
-@snp_bp.route('/population-comparison')
-def population_comparison():
+
+@snp_bp.route('/population-comparison/<search_data>')
+def population_comparison(search_data):
     try:
-        df = db.get_population_stats()  # This should return a DataFrame with population data
+        # this will be where we'll eventually process the real SNP statistics
+        # for now return placeholder page
 
         population_info = {
             'Punjabi': 'Sample population from Punjab region (exact sampling location TBD)',
@@ -124,16 +125,17 @@ def population_comparison():
             'Tamil': 'Sample population of Tamil speakers (exact sampling location TBD)'
         }
 
-        populations = {}
-        for _, row in df.iterrows():
-            populations[row.population] = {
-                'description': population_info[row.population],
-                'tajimas_d': row.tajimas_d,
-                'xp_ehh': row.xp_ehh,
-                'his': row.his,
-                'nucleotide_diversity': row.nucleotide_diversity
-            }
+        # placeholder data structure - will change when real stats are ready
+        populations = {
+            'Punjabi': {'description': population_info['Punjabi']},
+            'Telugu': {'description': population_info['Telugu']},
+            'Bengali': {'description': population_info['Bengali']},
+            'Gujarati': {'description': population_info['Gujarati']},
+            'Tamil': {'description': population_info['Tamil']}
+        }
 
-        return render_template('homepage/population_comparison.html', populations=populations)
+        return render_template('homepage/population_comparison.html',
+                               populations=populations,
+                               message="Statistics for selected SNPs will be available soon.")
     except Exception as e:
         return f"Error retrieving population statistics: {e}"

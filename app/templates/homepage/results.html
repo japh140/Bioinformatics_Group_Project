@@ -37,7 +37,11 @@
             <hr> <!-- add a line between results -->
         {% endfor %}
     {% if results|length > 1 %}  <!-- Only show if multiple SNPs -->
-    <a href="{{ url_for('snp_query.population_comparison') }}" class="comparison-link">Compare Populations</a>
+        <div class="comparison-section">
+        <a href="{{ url_for('snp_query.population_comparison', search_data=search_term) }}" class="comparison-link">
+            Compare Population Statistics
+        </a>
+    </div>
 {% endif %}
     {% else %}
         <p>No results found.</p>
