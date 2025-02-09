@@ -2,51 +2,54 @@
 <html>
 <head>
     <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Search Results</h1>
-    <p>Search type: {{ search_type }}</p>
-    <p>Search term: {{ search_term }}</p>
+    <div class="results-container">
+        <h1>Search Results</h1>
+        <p>Search type: {{ search_type }}</p>
+        <p>Search term: {{ search_term }}</p>
 
-    {% if results %}
-        <h2>Found Results:</h2>
-        {% for result in results %} <!-- this can now handle multiple search results -->
-            <div class="result-item">
-                <p>SNP ID: {{ result.snp_id }}</p>
-                <p>Chromosome: {{ result.chromosome }}</p>
-                <p>Position: {{ result.position }}</p>
-                <p>P-value: {{ result.p_value }}</p>
-                <p>Mapped Genes:
-                    {% for gene in result.mapped_genes %}
-                        {% if gene %}
-                            <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
-                            {%- if not loop.last %}, {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-                <p>Population: {{ result.population }}</p>
-                <p>Phenotype: {{ result.phenotype }}</p>
+        {% if results %}
+            <h2>Found Results:</h2>
+            {% for result in results %} <!-- this can now handle multiple search results -->
+                <div class="result-item">
+                    <p>SNP ID: {{ result.snp_id }}</p>
+                    <p>Chromosome: {{ result.chromosome }}</p>
+                    <p>Position: {{ result.position }}</p>
+                    <p>P-value: {{ result.p_value }}</p>
+                    <p>Mapped Genes:
+                        {% for gene in result.mapped_genes %}
+                            {% if gene %}
+                                <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
+                                {%- if not loop.last %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p>Population: {{ result.population }}</p>
+                    <p>Phenotype: {{ result.phenotype }}</p>
 
-                <!-- Download Button for Each SNP -->
-                <form action="{{ url_for('download.download_data') }}" method="POST">
-                    <input type="hidden" name="snp_id" value="{{ result.snp_id }}">
-                    <input type="hidden" name="population" value="{{ result.population }}">
-                    <button type="submit">Download Summary Statistics</button>
-                </form>
-            </div>
-            <hr> <!-- add a line between results -->
-        {% endfor %}
-    {% if results|length > 1 %}  <!-- Only show if multiple SNPs -->
-        <div class="comparison-section">
-        <a href="{{ url_for('snp_query.population_comparison', search_data=search_term) }}" class="comparison-link">
-            Compare Population Statistics
-        </a>
+                    <!-- Download Button for Each SNP -->
+                    <form action="{{ url_for('download.download_data') }}" method="POST">
+                        <input type="hidden" name="snp_id" value="{{ result.snp_id }}">
+                        <input type="hidden" name="population" value="{{ result.population }}">
+                        <button type="submit">Download Summary Statistics</button>
+                    </form>
+                </div>
+            {% endfor %}
+
+            {% if results|length > 1 %}
+                <div class="comparison-section">
+                    <a href="{{ url_for('snp_query.population_comparison', search_data=search_term) }}" class="comparison-link">
+                        Compare Population Statistics
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+
+        <a href="/" class="back-link">Back to Search</a>
     </div>
-{% endif %}
-    {% else %}
-        <p>No results found.</p>
-    {% endif %}
-
-    <a href="/">Back to Search</a>
 </body>
 </html>

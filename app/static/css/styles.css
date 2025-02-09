@@ -143,3 +143,65 @@ body {
 #pop-table tr:nth-child(even) {
     background-color: #f5f6fa;
 }
+
+/* results container styling */
+.results-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* result item styling */
+.result-item {
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+/* information fields */
+.result-item p {
+    margin: 10px 0;
+}
+
+/* download button styling */
+.result-item button {
+    background-color: #2c3e50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.result-item button:hover {
+    background-color: #34495e;
+}
+
+/* gene links */
+.result-item a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.result-item a:hover {
+    text-decoration: underline;
+}
+
+/* compare populations link */
+.comparison-section {
+    margin: 20px 0;
+}
+
+.comparison-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2c3e50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
