@@ -2,26 +2,31 @@
 <html>
 <head>
     <title>Gene Details: {{ gene_symbol }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Gene Details: {{ gene_symbol }}</h1>
+    <!-- Gene details container styled with .results-container -->
+    <div class="results-container">
+        <h1>Gene Details: {{ gene_symbol }}</h1>
 
-    {% if gene_info %}
-        <h2>Found Details:</h2>
-        {% for info in gene_info %} <!-- display all rows for the gene symbol -->
-            <div class="gene-info-item">
-                <p>Gene Symbol: {{ info.gene_symbol }}</p>
-                <p>Gene ID: {{ info.gene_id }}</p>
-                <p>Pathway: {{ info.pathway }}</p>
-                <p>GO Term: {{ info.go_term }}</p>
-                <p>Category: {{ info.category }}</p>
-            </div>
-            <hr> <!-- add a line between gene info rows -->
-        {% endfor %}
-    {% else %}
-        <p>No details found for this gene.</p>
-    {% endif %}
+        {% if gene_info %}
+            {% for info in gene_info %}
+                <!-- Gene info item styled with .result-item -->
+                <div class="result-item">
+                    <p><strong>Gene Symbol:</strong> {{ info.gene_symbol }}</p>
+                    <p><strong>Gene ID:</strong> {{ info.gene_id }}</p>
+                    <p><strong>Pathway:</strong> {{ info.pathway }}</p>
+                    <p><strong>GO Term:</strong> {{ info.go_term }}</p>
+                    <p><strong>Category:</strong> {{ info.category }}</p>
+                </div>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>No details found for this gene.</p>
+        {% endif %}
 
-    <a href="/">Back to Search</a>
+        <!-- Back link styled with .back-link -->
+        <a href="/" class="back-link">Back to Search</a>
+    </div>
 </body>
 </html>
