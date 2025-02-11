@@ -148,7 +148,7 @@ db_api = Blueprint('db_api', __name__)
 
 class DatabaseClass:
     
-    superpopulation = None
+    superpopulation = None # Superlopulation name used to partition the database. Allows for expansion to other populations
 
     def __init__(self):
         self.dbconnection = None
@@ -164,10 +164,10 @@ class DatabaseClass:
         """
         if 'dbconnection' not in g:
             # Create a new connection for the current request
-            database_location = current_app.config['DATABASE_PATH']
-            DatabaseClass.superpopulation = current_app.config['SUPER_POPULATION']
-            g.dbconnection = sqlite3.connect(database_location, check_same_thread=False)
-            g.dbconnection.row_factory = sqlite3.Row  # Allow accessing columns by name
+            database_location = current_app.config['DATABASE_PATH']                         # Get location nof the database
+            DatabaseClass.superpopulation = current_app.config['SUPER_POPULATION']          # get superpopulation name. Allows for future expansion to altertanive populations
+            g.dbconnection = sqlite3.connect(database_location, check_same_thread=False)    # connect to the SQlite database
+            g.dbconnection.row_factory = sqlite3.Row                                        # Allow accessing columns by name
         return g.dbconnection
 
 
@@ -370,6 +370,21 @@ class DatabaseClass:
         df = pd.read_sql_query(query, conn)
         return df
 
+
+    #
+    # Query Allele_Frequency by snpid. Restricted to global superpopulation. First 20 results returned.
+    #
+    @staticmethod
+    def get_allele_frequency_by_snp(query_string):
+
+        conn = DatabaseClass.get_db()
+        query = ('SELECT chromosome, position, snp_id, EAF, MAF, FST, population '
+                 'FROM Allele_Frequency '
+                 'WHERE snp_id LIKE "%{}%" AND superpopulation_name="{}" '
+                 'ORDER BY snp_id ' 
+                 'LIMIT 20').format(query_string, DatabaseClass.superpopulation)
+        df = pd.read_sql_query(query, conn)
+        return df
 
 #
 # Internal Function - After using g.dbconnection, close it after the request lifecycle ends:
