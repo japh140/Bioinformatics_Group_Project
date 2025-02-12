@@ -17,8 +17,8 @@ def gene_details(gene_symbol):
             gene_info = df.to_dict('records')
             return render_template('gene.html', gene_symbol=gene_symbol, gene_info=gene_info)
         else:
-            return f"No gene details found for {gene_symbol}"
+            # return f"No gene details found for {gene_symbol}"
+            return render_template('gene_error.html', gene_name=gene_symbol)
     except Exception as e:
         print(f"Error fetching gene details: {e}")
-        return f"Error fetching gene details for {gene_symbol}"
-
+        return render_template('gene_error.html', gene_name=gene_symbol)

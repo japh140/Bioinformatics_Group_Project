@@ -73,7 +73,10 @@ def search_results(search_type, search_term):
             case 'gene':
                 df = db.get_snp_by_gene(search_term)
             case _:
-                raise ValueError(f"Invalid search type: {search_type}")
+                return render_template('homepage/search_error.html',
+                                   search_type=search_type,
+                                   search_term=search_term,
+                                   error_message="Invalid search type")
 
         if df is not None and not df.empty:
             # group by snp id to combine multiple entries
@@ -99,15 +102,26 @@ def search_results(search_type, search_term):
                                    search_term=search_term,
                                    results=results)
         else:
-            return f"No results found for {search_term}"
+            return render_template('homepage/search_error.html',
+                                   search_type=search_type,
+                                   search_term=search_term,
+                                   error_message="No results found")
 
     except ValueError as ve:
-        return f"Invalid search parameters: {str(ve)}"
+        return render_template('homepage/search_error.html',
+                               search_type=search_type,
+                               search_term=search_term,
+                               error_message=str(ve))
     except IndexError:
-        return f"No results found for {search_term}"
+        return render_template('homepage/search_error.html',
+                               search_type=search_type,
+                               search_term=search_term,
+                               error_message="No results found")
     except Exception as e:
-        return f"Error processing search for {search_term}. Please try again later."
-
+        return render_template('homepage/search_error.html',
+                               search_type=search_type,
+                               search_term=search_term,
+                               error_message="Error processing search. Please try again later.")
 
 @snp_bp.route('/population-comparison/<search_data>')
 def population_comparison(search_data):
