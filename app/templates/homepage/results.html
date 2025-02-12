@@ -25,7 +25,7 @@
                     <p>Chromosome: {{ result.chromosome }}</p>
                     <p>Position: {{ result.position }}</p>
                     <p>P-values: {{ result.p_values|join(', ') }}</p>
-                    <p>Populations: {{ result.populations|join(', ') }}</p>
+                    <p>Population: {{ result.population }}</p>
                     <p>Mapped Genes:
                         {% for gene in result.mapped_genes %}
                             {% if gene %}

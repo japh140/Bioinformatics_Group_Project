@@ -84,18 +84,27 @@ def search_results(search_type, search_term):
             grouped = df.groupby('snp_id')
 
             for snp_id, group in grouped:
-                # get the common values (should be same for all entries of same snp)
-                first_row = group.iloc[0]
-                result = {
-                    'snp_id': snp_id,
-                    'chromosome': first_row.chromosome,
-                    'position': first_row.position,
-                    'p_values': group.p_value.unique().tolist(),  # list of all unique p values
-                    'mapped_genes': group.mapped_gene.unique().tolist(),  # list of all unique genes
-                    'populations': group.population.unique().tolist(),  # list of all unique populations
-                    'phenotype': first_row.phenotype
-                }
-                results.append(result)
+                # first get populations for this snp
+                populations = group.population.unique()
+
+                # for each population
+                for pop in populations:
+                    # get all rows for this snp and population
+                    pop_data = group[group.population == pop]
+
+                    # get first row for common data
+                    first_row = pop_data.iloc[0]
+
+                    result = {
+                        'snp_id': snp_id,
+                        'chromosome': first_row.chromosome,
+                        'position': first_row.position,
+                        'p_values': pop_data.p_value.unique().tolist(),  # p-values for this population
+                        'mapped_genes': pop_data.mapped_gene.unique().tolist(),
+                        'population': pop,  # single population
+                        'phenotype': first_row.phenotype
+                    }
+                    results.append(result)
 
             return render_template('homepage/results.html',
                                    search_type=search_type,
