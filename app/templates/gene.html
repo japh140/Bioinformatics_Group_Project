@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    <div class="header">
+        <a href="{{ url_for('snp_query.index') }}" class="header-link">
+            <h1>Type 2 Diabetes SNP Analysis Tool</h1>
+            <h4>QMUL Bioinformatics: Bionic Beavers Group Database of Type 2 Diabetes Related SNPs</h4>
+        </a>
+    </div>
+
     <!-- Gene details container styled with .results-container -->
     <div class="results-container">
         <h1>Gene Details: {{ gene_symbol }}</h1>

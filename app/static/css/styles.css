@@ -8,17 +8,23 @@
     max-width: 800px;  /* Made it wider than the form container */
     border-radius: 20px;  /* Rounded corners */
 }
+.header-link {
+    text-decoration: none;
+    color: white;
+}
 
-.header h1 {
+.header-link:hover {
+    color: #f5f6fa;
+}
+
+.header h1, .header h4 {
     margin: 0;
-    padding: 10px 0;
 }
 
 .header h4 {
-    margin: 0;
+    margin-top: 10px;
     font-weight: normal;
 }
-
 /* Container styles */
 .container {
     max-width: 600px;

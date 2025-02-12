@@ -54,6 +54,7 @@ def index():
                               search_term=search_term))
     return render_template('homepage/index.html', form=form)
 
+
 @snp_bp.route('/search/<search_type>/<search_term>')
 def search_results(search_type, search_term):
     try:
@@ -75,25 +76,23 @@ def search_results(search_type, search_term):
                 raise ValueError(f"Invalid search type: {search_type}")
 
         if df is not None and not df.empty:
-            # Remove duplicates based on different combinations of columns:
-            # 1. SNP ID and Population
-            # 2. Gene Symbol (Mapped Gene) and Population
-            # 3. Chromosome and Population
-            df = df.drop_duplicates(subset=['snp_id', 'population'], keep='first')
-            df = df.drop_duplicates(subset=['mapped_gene', 'population'], keep='first')
-            df = df.drop_duplicates(subset=['chromosome', 'population'], keep='first')
-
+            # group by snp id to combine multiple entries
             results = []
-            for _, row in df.iterrows():
-                results.append({
-                    'snp_id': row.snp_id,
-                    'chromosome': row.chromosome,
-                    'position': row.position,
-                    'p_value': row.p_value,
-                    'mapped_genes': [row.mapped_gene] if row.mapped_gene else [],
-                    'population': row.population,
-                    'phenotype': row.phenotype
-                })
+            grouped = df.groupby('snp_id')
+
+            for snp_id, group in grouped:
+                # get the common values (should be same for all entries of same snp)
+                first_row = group.iloc[0]
+                result = {
+                    'snp_id': snp_id,
+                    'chromosome': first_row.chromosome,
+                    'position': first_row.position,
+                    'p_values': group.p_value.unique().tolist(),  # list of all unique p values
+                    'mapped_genes': group.mapped_gene.unique().tolist(),  # list of all unique genes
+                    'populations': group.population.unique().tolist(),  # list of all unique populations
+                    'phenotype': first_row.phenotype
+                }
+                results.append(result)
 
             return render_template('homepage/results.html',
                                    search_type=search_type,
@@ -108,7 +107,6 @@ def search_results(search_type, search_term):
         return f"No results found for {search_term}"
     except Exception as e:
         return f"Error processing search for {search_term}. Please try again later."
-
 
 
 @snp_bp.route('/population-comparison/<search_data>')

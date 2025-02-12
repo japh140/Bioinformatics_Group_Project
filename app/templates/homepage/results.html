@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    <div class="header">
+        <a href="{{ url_for('snp_query.index') }}" class="header-link">
+            <h1>Type 2 Diabetes SNP Analysis Tool</h1>
+            <h4>QMUL Bioinformatics: Bionic Beavers Group Database of Type 2 Diabetes Related SNPs</h4>
+        </a>
+    </div>
+
     <div class="results-container">
         <h1>Search Results</h1>
         <p>Search type: {{ search_type }}</p>
@@ -17,7 +24,8 @@
                     <p>SNP ID: {{ result.snp_id }}</p>
                     <p>Chromosome: {{ result.chromosome }}</p>
                     <p>Position: {{ result.position }}</p>
-                    <p>P-value: {{ result.p_value }}</p>
+                    <p>P-values: {{ result.p_values|join(', ') }}</p>
+                    <p>Populations: {{ result.populations|join(', ') }}</p>
                     <p>Mapped Genes:
                         {% for gene in result.mapped_genes %}
                             {% if gene %}
@@ -26,7 +34,6 @@
                             {% endif %}
                         {% endfor %}
                     </p>
-                    <p>Population: {{ result.population }}</p>
                     <p>Phenotype: {{ result.phenotype }}</p>
 
                     <!-- Download Button for Each SNP -->
