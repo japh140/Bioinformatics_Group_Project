@@ -1,8 +1,6 @@
-from app import create_app
+from app import app
 
-# Create the Flask app
-app = create_app()
-
-# Run the app
 if __name__ == '__main__':
     app.run(debug=True)
+
+# Start using this one to run the thing

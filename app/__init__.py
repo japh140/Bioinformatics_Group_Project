@@ -11,7 +11,7 @@ except ImportError:
     from blueprints.snp_query.gene import gene_bp
     from blueprints.snp_query.download import download_bp
     from blueprints.db_api.db_api import db_api, init_db_teardown
-from config import Config
+from app.config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
