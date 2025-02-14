@@ -34,10 +34,7 @@
                 <thead>
                     <tr>
                         <th>Population</th>
-                        <th>Tajima's D</th>
-                        <th>XP-EHH</th>
-                        <th>HIS</th>
-                        <th>Nucleotide Diversity</th>
+                        <th>FST</th>
                     </tr>
                 </thead>
                 <tbody id="stats-body-1">
@@ -57,6 +54,12 @@
                 <!-- JavaScript will populate this -->
                 </tbody>
             </table>
+
+            <form action="{{ url_for('snp_query.download_snp_data') }}" method="POST">
+                <input type="hidden" name="snp_id" value="{{ search_data }}">
+                <button type="submit">Download SNP & Population Data</button>
+            </form>
+
         </div>
         <p>Statistics visualisation coming soon. Population descriptions are placeholder.</p>
     </div>
@@ -84,10 +87,7 @@
             const row1 = document.createElement('tr');
             row1.innerHTML = `
                 <td>${pop}</td>
-                <td>${stats.tajimas_d}</td>
-                <td>${stats.xp_ehh}</td>
-                <td>${stats.his}</td>
-                <td>${stats.nucleotide_diversity}</td>
+                <td>${stats.fst}</td>
             `;
             tbody1.appendChild(row1);
 

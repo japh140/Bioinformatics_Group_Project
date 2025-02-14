@@ -2,6 +2,11 @@ from flask import Blueprint, render_template, url_for, redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Regexp, ValidationError
+import io
+import csv
+from flask import send_file, request
+import logging
+
 
 try:
     # absolute import version
@@ -135,28 +140,95 @@ def search_results(search_type, search_term):
 @snp_bp.route('/population-comparison/<search_data>')
 def population_comparison(search_data):
     try:
-        # this will be where we'll eventually process the real SNP statistics
-        # for now return placeholder page
+        # Fetch FST and population data using the allele frequency table
+        fst_data_df = db.get_allele_frequency_by_snp(search_data)
 
-        population_info = {
-            'Punjabi': 'Sample population from Punjab region (exact sampling location TBD)',
-            'Telugu': 'Sample population of Telugu speakers (exact sampling location TBD)',
-            'Bengali': 'Sample population from Bengal region (exact sampling location TBD)',
-            'Gujarati': 'Sample population from Gujarat region (exact sampling location TBD)',
-            'Tamil': 'Sample population of Tamil speakers (exact sampling location TBD)'
-        }
+        # Initialize populations dictionary
+        populations = {}
 
-        # placeholder data structure - will change when real stats are ready
-        populations = {
-            'Punjabi': {'description': population_info['Punjabi']},
-            'Telugu': {'description': population_info['Telugu']},
-            'Bengali': {'description': population_info['Bengali']},
-            'Gujarati': {'description': population_info['Gujarati']},
-            'Tamil': {'description': population_info['Tamil']}
-        }
+        # Check if FST data is available
+        if fst_data_df is not None and not fst_data_df.empty:
+            for index, row in fst_data_df.iterrows():
+                population = row['population']
+                fst_value = row['FST']
+                
+                # Handle None values
+                if population is None:
+                    population = "Unknown Population"
+                
+                if fst_value is None:
+                    fst_value = "N/A"  # Default value for missing FST data
+                
+                # Add population and FST data to dictionary
+                populations[population] = {'fst': fst_value, 'description': f'Sample population description for {population}'}
 
-        return render_template('homepage/population_comparison.html',
-                               populations=populations,
-                               message="Statistics for selected SNPs will be available soon.")
+            # Render the population comparison page with FST data
+            return render_template('homepage/population_comparison.html',
+                                   populations=populations,
+                                   search_data=search_data,
+                                   message="Population comparison statistics are displayed below.")
+        else:
+            # Handle case where no FST data is found
+            return render_template('homepage/population_comparison.html',
+                                   populations={},
+                                   search_data=search_data,
+                                   message="No population data found for the given SNP.")
     except Exception as e:
-        return f"Error retrieving population statistics: {e}"
+        # Log the error or print for debugging
+        print(f"Error retrieving population statistics: {e}")
+        return render_template('homepage/population_comparison.html',
+                               populations={},
+                               search_data=search_data,
+                               message="Error retrieving population statistics. Please try again later.")
+
+    
+
+
+
+# Download Button
+logging.basicConfig(level=logging.DEBUG)
+
+@snp_bp.route('/download-snp-data', methods=['POST'])
+def download_snp_data():
+    try:
+        # Step 1: Get the SNP ID from the form input
+        snp_id = request.form.get('snp_id')
+        print(f"Received SNP ID: {snp_id}")  # Debugging statement
+        
+        if not snp_id:
+            raise ValueError("No SNP ID provided.")
+        
+        # Step 2: Fetch SNP Data from the Database using the allele_frequency table
+        snp_data = db.get_allele_frequency_by_snp(snp_id)
+        print(f"SNP Data fetched: {snp_data}")  # Debugging statement
+        
+        if snp_data is None or snp_data.empty:
+            print("No data found for SNP ID.")  # Debugging statement
+            raise ValueError(f"No data found for SNP ID: {snp_id}")
+
+        # Step 3: Prepare Plain Text Data
+        print("Creating plain text data...")  # Debugging statement
+        output = io.StringIO()  # Use StringIO for text-based content
+        
+        # Add the headers manually
+        output.write("SNP ID | Population | FST\n")
+
+        # Write the data rows
+        for index, row in snp_data.iterrows():
+            output.write(f"{row['snp_id']} | {row['population']} | {row['FST']}\n")
+        
+        output.seek(0)  # Reset the cursor to the start of the StringIO buffer
+        
+        # Step 4: Send the plain text file as a download
+        print("Sending plain text file as response...")  # Debugging statement
+        return send_file(io.BytesIO(output.getvalue().encode()), 
+                         mimetype='text/plain',  # Set MIME type to plain text
+                         as_attachment=True, 
+                         download_name=f"{snp_id}_population_data.txt")  # Specify .txt extension
+
+    except Exception as e:
+        print(f"Error: {str(e)}")  # Debugging statement
+        return render_template('homepage/search_error.html', 
+                               search_type='population', 
+                               search_term=snp_id, 
+                               error_message="Error generating SNP data. Please try again later.")

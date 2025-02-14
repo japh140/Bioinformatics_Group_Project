@@ -404,7 +404,7 @@ class DatabaseClass:
     def get_allele_frequency_by_snp(query_string):
 
         conn = DatabaseClass.get_db()
-        query = ('SELECT chromosome, position, snp_id, EAF, MAF, FST, population '
+        query = ('SELECT  snp_id, FST, population '
                  'FROM Allele_Frequency '
                  'WHERE snp_id LIKE "%{}%" AND superpopulation_name="{}" '
                  'ORDER BY snp_id ' 
