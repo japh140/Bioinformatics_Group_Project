@@ -36,12 +36,6 @@
                     </p>
                     <p>Phenotype: {{ result.phenotype }}</p>
 
-                    <!-- Download Button for Each SNP -->
-                    <form action="{{ url_for('download.download_data') }}" method="POST">
-                        <input type="hidden" name="snp_id" value="{{ result.snp_id }}">
-                        <input type="hidden" name="population" value="{{ result.population }}">
-                        <button type="submit">Download Summary Statistics</button>
-                    </form>
                 </div>
             {% endfor %}
 
