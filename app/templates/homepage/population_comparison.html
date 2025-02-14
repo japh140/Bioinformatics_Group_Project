@@ -54,7 +54,7 @@
                 <!-- JavaScript will populate this -->
                 </tbody>
             </table>
-
+        <div class="result-item">
             <form action="{{ url_for('snp_query.download_snp_data') }}" method="POST">
                 <input type="hidden" name="snp_id" value="{{ search_data }}">
                 <button type="submit">Download SNP & Population Data</button>
