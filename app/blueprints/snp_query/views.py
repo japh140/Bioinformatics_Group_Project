@@ -197,7 +197,7 @@ def download_snp_data():
         
         if not snp_id:
             raise ValueError("No SNP ID provided.")
-        
+
         # Step 2: Fetch SNP Data from the Database using the allele_frequency table
         snp_data = db.get_allele_frequency_by_snp(snp_id)
         print(f"SNP Data fetched: {snp_data}")  # Debugging statement
@@ -205,22 +205,36 @@ def download_snp_data():
         if snp_data is None or snp_data.empty:
             print("No data found for SNP ID.")  # Debugging statement
             raise ValueError(f"No data found for SNP ID: {snp_id}")
+        
+        # Step 3: Fetch Additional SNP Details using get_snp_by_id
+        snp_info = db.get_snp_by_id(snp_id)  # Fetch SNP details from SNP_Associations table
+        print(f"SNP Info fetched: {snp_info}")  # Debugging statement
 
-        # Step 3: Prepare Plain Text Data
-        print("Creating plain text data...")  # Debugging statement
+        if snp_info is None or snp_info.empty:
+            raise ValueError(f"No SNP information found for SNP ID: {snp_id}")
+
+        # Step 4: Prepare Plain Text Data
         output = io.StringIO()  # Use StringIO for text-based content
         
-        # Add the headers manually
-        output.write("SNP ID | Population | FST\n")
+        # Add SNP info (first row for SNP details)
+        snp_details = snp_info.iloc[0]  # Get the first entry of the SNP info
+        output.write(f"SNP ID: {snp_details.get('snp_id', '')}\n")
+        output.write(f"Chromosome: {snp_details.get('chromosome', '')}\n")
+        output.write(f"Position: {snp_details.get('position', '')}\n")
+        output.write(f"P-value: {snp_details.get('p_value', '')}\n")
+        output.write(f"Mapped Genes: {snp_details.get('mapped_gene', '')}\n")
+        output.write(f"Phenotype: {snp_details.get('phenotype', '')}\n\n")
+        
+        # Add column headers for FST data
+        output.write("Population | FST\n")
 
-        # Write the data rows
+        # Write the FST data rows
         for index, row in snp_data.iterrows():
-            output.write(f"{row['snp_id']} | {row['population']} | {row['FST']}\n")
+            output.write(f"{row['population']} | {row['FST']}\n")
         
         output.seek(0)  # Reset the cursor to the start of the StringIO buffer
         
-        # Step 4: Send the plain text file as a download
-        print("Sending plain text file as response...")  # Debugging statement
+        # Step 5: Send the plain text file as a download
         return send_file(io.BytesIO(output.getvalue().encode()), 
                          mimetype='text/plain',  # Set MIME type to plain text
                          as_attachment=True, 
