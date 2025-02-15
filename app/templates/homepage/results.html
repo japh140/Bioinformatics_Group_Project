@@ -19,7 +19,7 @@
 
         {% if results %}
             <h2>Found Results:</h2>
-            {# First group results by SNP ID #}
+            <!-- first group results by SNP ID #} -->
             {% set current_snp = namespace(id=None) %}
             {% for result in results %}
                 {% if result.snp_id != current_snp.id %}
