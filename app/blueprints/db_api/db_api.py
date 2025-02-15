@@ -141,22 +141,24 @@
 ##      def get_allele_frequency_by_snp(query_string)
 """
 ##      return:             dataframe of results (empty if no results)
-##          SELECT:         chromosome, position, snp_id, EAF, MAF, FST, population
+##          SELECT:         snp_id, FST, population
 ##          FROM            Allele_Frequency
 ##          WHERE           snp_id LIKE "%<query_string>%""
 ##          ORDER BY        snp_id
 
 
+# Import required libraries
 import sqlite3
 import pandas as pd
 from flask import Blueprint, current_app, g
 
 db_api = Blueprint('db_api', __name__)
 
+# Declare database class
 class DatabaseClass:
     
     superpopulation = None # Superlopulation name used to partition the database. Allows for expansion to other populations
-    SQLlimit = None        # Sets the maximum numvber of results returned by queries.
+    SQLlimit = None        # Sets the maximum number of results returned by queries.
 
     def __init__(self):
         self.dbconnection = None
@@ -166,10 +168,6 @@ class DatabaseClass:
     #
     @staticmethod
     def get_db():
-        """
-        Returns a database connection for the current request.
-        If the connection is already established, it will reuse it.
-        """
         if 'dbconnection' not in g:
             # Create a new connection for the current request
             database_location = current_app.config['DATABASE_PATH']                         # Get location nof the database
@@ -181,7 +179,7 @@ class DatabaseClass:
 
 
     #
-    # Close the database connection at the end of the request.
+    # Internal Function - Close the database connection at the end of the request.
     #
     @staticmethod
     def close_db():
