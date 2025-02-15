@@ -207,9 +207,15 @@ body {
     display: inline-block;
     padding: 10px 20px;
     background-color: #2c3e50;
-    color: white;
+    color: white !important;  /* Added !important to override default link color */
     text-decoration: none;
     border-radius: 4px;
+}
+
+.comparison-link:hover {
+    background-color: #34495e;
+    color: white !important;  /* Keep text white on hover too */
+    text-decoration: none;
 }
 .error-message {
     text-align: center;
@@ -226,4 +232,23 @@ body {
     color: white;
     text-decoration: none;
     border-radius: 4px;
+}
+
+.snp-group {
+    background-color: #f5f6fa;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.result-item {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.comparison-section {
+    margin-top: 15px;
+    text-align: center;
 }

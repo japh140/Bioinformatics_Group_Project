@@ -19,13 +19,30 @@
 
         {% if results %}
             <h2>Found Results:</h2>
-            {% for result in results %} <!-- this can now handle multiple search results -->
+            {# First group results by SNP ID #}
+            {% set current_snp = namespace(id=None) %}
+            {% for result in results %}
+                {% if result.snp_id != current_snp.id %}
+                    {% if current_snp.id is not none %}
+                            <!-- Close previous SNP group and add its comparison button -->
+                            <div class="comparison-section">
+                                <a href="{{ url_for('snp_query.population_comparison', search_data=current_snp.id) }}" class="comparison-link">
+                                    Compare Population Statistics for {{ current_snp.id }}
+                                </a>
+                            </div>
+                        </div> <!-- Close snp-group -->
+                    {% endif %}
+                    {% set current_snp.id = result.snp_id %}
+                    <!-- Start new SNP group -->
+                    <div class="snp-group">
+                        <h3>SNP: {{ result.snp_id }}</h3>
+                {% endif %}
+
                 <div class="result-item">
-                    <p>SNP ID: {{ result.snp_id }}</p>
+                    <p>Population: {{ result.population }}</p>
                     <p>Chromosome: {{ result.chromosome }}</p>
                     <p>Position: {{ result.position }}</p>
                     <p>P-values: {{ result.p_values|join(', ') }}</p>
-                    <p>Population: {{ result.population }}</p>
                     <p>Mapped Genes:
                         {% for gene in result.mapped_genes %}
                             {% if gene %}
@@ -38,19 +55,19 @@
 
                 </div>
             {% endfor %}
-
-            {% if results|length > 1 %}
+            {% if results %}
+                <!-- Close last SNP group and add its comparison button -->
                 <div class="comparison-section">
-                    <a href="{{ url_for('snp_query.population_comparison', search_data=search_term) }}" class="comparison-link">
-                        Compare Population Statistics
+                    <a href="{{ url_for('snp_query.population_comparison', search_data=current_snp.id) }}" class="comparison-link">
+                        Compare Population Statistics for {{ current_snp.id }}
                     </a>
                 </div>
+                </div> <!-- Close last snp-group -->
             {% endif %}
         {% else %}
             <p>No results found.</p>
-        {% endif %}
+    {% endif %}
 
-        <!-- <a href="/" class="back-link">Back to Search</a> -->
-    </div>
+
 </body>
 </html>
