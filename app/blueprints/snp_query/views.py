@@ -150,19 +150,33 @@ def population_comparison(search_data):
         if fst_data_df is not None and not fst_data_df.empty:
             for index, row in fst_data_df.iterrows():
                 population = row['population']
+                eaf = row['EAF']
+                maf = row['MAF']
                 fst_value = row['FST']
                 
-                # Handle None values
+                # Handle None values for EAF, MAF, and FST
                 if population is None:
                     population = "Unknown Population"
+                
+                # Ensure proper handling for missing values of EAF, MAF, and FST
+                if eaf is None:
+                    eaf = "N/A"
+                
+                if maf is None:
+                    maf = "N/A"
                 
                 if fst_value is None:
                     fst_value = "N/A"  # Default value for missing FST data
                 
-                # Add population and FST data to dictionary
-                populations[population] = {'fst': fst_value, 'description': f'Sample population description for {population}'}
+                # Add population and FST, EAF, MAF data to dictionary
+                populations[population] = {
+                    'fst': fst_value,
+                    'eaf': eaf,
+                    'maf': maf,
+                    'description': f'Sample population description for {population}'
+                }
 
-            # Render the population comparison page with FST data
+            # Render the population comparison page with FST, EAF, and MAF data
             return render_template('homepage/population_comparison.html',
                                    populations=populations,
                                    search_data=search_data,
@@ -180,8 +194,6 @@ def population_comparison(search_data):
                                populations={},
                                search_data=search_data,
                                message="Error retrieving population statistics. Please try again later.")
-
-    
 
 
 
@@ -225,12 +237,15 @@ def download_snp_data():
         output.write(f"Mapped Genes: {snp_details.get('mapped_gene', '')}\n")
         output.write(f"Phenotype: {snp_details.get('phenotype', '')}\n\n")
         
-        # Add column headers for FST data
-        output.write("Population | FST\n")
+        # Add column headers for FST, EAF, MAF data
+        output.write("Population | EAF | MAF | FST\n")
 
-        # Write the FST data rows
+        # Write the FST, EAF, and MAF data rows
         for index, row in snp_data.iterrows():
-            output.write(f"{row['population']} | {row['FST']}\n")
+            eaf = row['EAF'] if row['EAF'] is not None else "N/A"  # Handle None EAF
+            maf = row['MAF'] if row['MAF'] is not None else "N/A"  # Handle None MAF
+            fst = row['FST'] if row['FST'] is not None else "N/A"  # Handle None FST
+            output.write(f"{row['population']} | {eaf} | {maf} | {fst}\n")
         
         output.seek(0)  # Reset the cursor to the start of the StringIO buffer
         

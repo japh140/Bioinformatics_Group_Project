@@ -34,6 +34,8 @@
                 <thead>
                     <tr>
                         <th>Population</th>
+                        <th>EAF</th>
+                        <th>MAF</th>
                         <th>FST</th>
                     </tr>
                 </thead>
@@ -42,6 +44,7 @@
                 </tbody>
             </table>
         </div>
+        
         <div id="pop-table">
             <table>
                 <thead>
@@ -51,16 +54,18 @@
                     </tr>
                 </thead>
                 <tbody id="stats-body-2">
-                <!-- JavaScript will populate this -->
+                    <!-- JavaScript will populate this -->
                 </tbody>
             </table>
+        </div>
+
         <div class="result-item">
             <form action="{{ url_for('snp_query.download_snp_data') }}" method="POST">
                 <input type="hidden" name="snp_id" value="{{ search_data }}">
                 <button type="submit">Download SNP & Population Data</button>
             </form>
-
         </div>
+
         <p>Statistics visualisation coming soon. Population descriptions are placeholder.</p>
     </div>
 
@@ -83,10 +88,12 @@
         selectedPopulations.forEach(pop => {
             const stats = populationData[pop];
 
-            // Create row for statistics table
+            // Create row for statistics table (with EAF, MAF, and FST)
             const row1 = document.createElement('tr');
             row1.innerHTML = `
                 <td>${pop}</td>
+                <td>${stats.eaf}</td>
+                <td>${stats.maf}</td>
                 <td>${stats.fst}</td>
             `;
             tbody1.appendChild(row1);
