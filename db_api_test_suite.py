@@ -41,7 +41,7 @@ assert len(df.columns)==7,           "\033[91m Error11 : get_snp_by_id() \033[0m
 print('\n\033[94m TESTING: get_snp_by_gene \033[0m')
 df = db.get_snp_by_gene('KCNQ1')
 print(df)
-assert len(df)==24,                  "\033[91m Error1 : get_snp_by_gene \033[0m"
+assert len(df)==25,                  "\033[91m Error1 : get_snp_by_gene \033[0m"
 assert len(df.columns)==7,           "\033[91m Error2 : get_snp_by_gene \033[0m"
 assert df.columns[0]=='snp_id',      "\033[91m Error3 : get_snp_by_gene \033[0m"
 assert df.columns[1]=='chromosome',  "\033[91m Error4 : get_snp_by_gene \033[0m"
@@ -62,7 +62,7 @@ assert len(df.columns)==7,           "\033[91m Error11 : get_snp_by_gene \033[0m
 print('\n\033[94m TESTING: get_snp_by_coordinates \033[0m')
 df = db.get_snp_by_coordinates('11', 2500000, 2700000)
 print(df)
-assert len(df)==9,                   "\033[91m Error1 : get_snp_by_coordinates \033[0m"
+assert len(df)==16,                   "\033[91m Error1 : get_snp_by_coordinates \033[0m"
 assert len(df.columns)==7,           "\033[91m Error2 : get_snp_by_coordinates \033[0m"
 assert df.columns[0]=='snp_id',      "\033[91m Error3 : get_snp_by_coordinates \033[0m"
 assert df.columns[1]=='chromosome',  "\033[91m Error4 : get_snp_by_coordinates \033[0m"
@@ -264,7 +264,6 @@ assert len(df)==0,                              "\033[91m Error9 : get_summary_s
 assert len(df.columns)==6,                      "\033[91m Error10 : get_summary_stats_by_snp \033[0m"
 
 
-
 #
 # Test get_allele_frequency_by_snp
 #
@@ -272,19 +271,46 @@ print('\n\033[94m TESTING: get_allele_frequency_by_snp \033[0m')
 df = db.get_allele_frequency_by_snp('rs12219514')
 print(df)
 assert len(df)==4,                              "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
-assert len(df.columns)==3,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[0]=='snp_id',                 "\033[91m Error5 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[1]=='FST',                    "\033[91m Error8 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[2]=='population',             "\033[91m Error9 : get_allele_frequency_by_snp \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error4 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error5 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[3]=='EAF',                    "\033[91m Error6 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[4]=='MAF',                    "\033[91m Error7 : get_allele_frequency_by_snp \033[0m"
 
 df = db.get_allele_frequency_by_snp('Gaijn@#_+')
 print(df)
-assert len(df)==0,                              "\033[91m Error10 : get_allele_frequency_by_snp \033[0m"
-assert len(df.columns)==3,                      "\033[91m Error11 : get_allele_frequency_by_snp \033[0m"
+assert len(df)==0,                              "\033[91m Error8 : get_allele_frequency_by_snp \033[0m"
+assert len(df.columns)==5,                      "\033[91m Error9 : get_allele_frequency_by_snp \033[0m"
 
 
 #
-# Close Database Connection
+# Test get_fst_by_population
 #
-#db.db_close()
+print('\n\033[94m TESTING: get_allele_frequency_by_snp \033[0m')
+df = db.get_fst_by_population('Punjabi')
+print(df)
+assert len(df)==25,                             "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
+assert len(df.columns)==3,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error4 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error5 : get_allele_frequency_by_snp \033[0m"
+
+df = db.get_fst_by_population('')
+print(df)
+assert len(df)==25,                             "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
+assert len(df.columns)==3,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error4 : get_allele_frequency_by_snp \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error5 : get_allele_frequency_by_snp \033[0m"
+
+df = db.get_fst_by_population('Gaijn@#_+')
+print(df)
+assert len(df)==0,                             "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
+assert len(df.columns)==3,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
+
+
+#
+# All OK
+#
 print ('\n\033[92m EVERYTHING IS WORKING \033[0m')

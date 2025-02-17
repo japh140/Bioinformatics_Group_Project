@@ -141,9 +141,18 @@
 ##      def get_allele_frequency_by_snp(query_string)
 """
 ##      return:             dataframe of results (empty if no results)
-##          SELECT:         snp_id, FST, population
+##          SELECT:         snp_id, FST, population, EAF, MAF
 ##          FROM            Allele_Frequency
 ##          WHERE           snp_id LIKE "%<query_string>%""
+##          ORDER BY        snp_id
+
+"""
+##      def get_fst_by_population(query_string)
+"""
+##      return:             dataframe of results (empty if no results)
+##          SELECT:         snp_id, FST, population
+##          FROM            Allele_Frequency
+##          WHERE           population LIKE "%<query_string>%""
 ##          ORDER BY        snp_id
 
 
@@ -409,6 +418,24 @@ class DatabaseClass:
                  'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
+
+
+    #
+    # Query Allele_Frequency by population. Restricted to global superpopulation. First 20 results returned.
+    #
+    @staticmethod
+    def get_fst_by_population(query_string):
+
+        conn = DatabaseClass.get_db()
+        populationquery = 'population IS NULL' if query_string=='' else 'population="{}"'.format(query_string)
+        query = ('SELECT  snp_id, FST, population '
+                 'FROM Allele_Frequency '
+                 'WHERE ' + populationquery + ' AND superpopulation_name="{}" '
+                 'ORDER BY snp_id ' 
+                 'LIMIT {}').format(DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
+        df = pd.read_sql_query(query, conn)
+        return df
+
 
 #
 # Internal Function - After using g.dbconnection, close it after the request lifecycle ends:
