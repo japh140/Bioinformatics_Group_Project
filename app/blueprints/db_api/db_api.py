@@ -141,7 +141,7 @@
 ##      def get_allele_frequency_by_snp(query_string)
 """
 ##      return:             dataframe of results (empty if no results)
-##          SELECT:         snp_id, FST, population
+##          SELECT:         snp_id, FST, population, EAF, MAF
 ##          FROM            Allele_Frequency
 ##          WHERE           snp_id LIKE "%<query_string>%""
 ##          ORDER BY        snp_id
