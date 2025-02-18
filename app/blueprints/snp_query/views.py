@@ -138,24 +138,28 @@ def search_results(search_type, search_term):
                                error_message="Error processing search. Please try again later.")
 
 
-
 @snp_bp.route('/population-comparison', methods=['POST'])
 def population_comparison():
     try:
-        # Step 1: Retrieve all SNP IDs from the form submission
-        snp_ids = request.form.getlist('snp_ids[]')  # Expecting SNP IDs to be sent as a list
-        print("SNP IDs received from the form:", snp_ids)
-        
+        # Debug: Print raw form data
+        # print("Raw form data:", request.form)
+
+        # Get SNP IDs as list
+        snp_ids = request.form.getlist('snp_ids')
+
         if not snp_ids:
-            raise ValueError("No SNP IDs provided.")
-        
+            # print("No SNP IDs found in form data")
+            raise ValueError("No SNP IDs provided")
+
+        # print("Processed SNP IDs:", snp_ids)
+
         # Step 2: Fetch FST values for each SNP ID using the get_fst_value_by_snp_for_empty_population method
         fst_data = []
         
-        print("Starting FST data retrieval...")
+        # print("Starting FST data retrieval...")
         
         for snp_id in snp_ids:
-            print(f"Processing SNP ID: {snp_id}")
+            # print(f"Processing SNP ID: {snp_id}")
             
             # Call the static method to fetch FST data for the SNP with empty population
             fst_df = db.get_fst_value_by_snp_for_empty_population(snp_id)  # Get FST data for this SNP
@@ -164,31 +168,31 @@ def population_comparison():
                 try:
                     # Extract the FST value for population=''
                     fst_value = fst_df['FST'].values[0]
-                    print(f"Extracted FST value for SNP ID {snp_id}: {fst_value}")
+                    # print(f"Extracted FST value for SNP ID {snp_id}: {fst_value}")
                     fst_data.append({
                         'snp_id': snp_id,
                         'fst': fst_value
                     })
                 except IndexError as e:
-                    print(f"Error extracting FST value for SNP ID {snp_id}: {e}")
+                    # print(f"Error extracting FST value for SNP ID {snp_id}: {e}")
                     # Append 'N/A' if no valid FST value is found
                     fst_data.append({
                         'snp_id': snp_id,
                         'fst': 'N/A'
                     })
             else:
-                print(f"Skipping SNP ID {snp_id} due to missing or empty FST data.")
+                # print(f"Skipping SNP ID {snp_id} due to missing or empty FST data.")
                 # Append 'N/A' if no FST data is found
                 fst_data.append({
                     'snp_id': snp_id,
                     'fst': 'N/A'
                 })
         
-        print("FST data collected:", fst_data)
+        # print("FST data collected:", fst_data)
 
         # Step 3: Process population data
         populations = {}
-        print("Processing population data...")
+        # print("Processing population data...")
         
         for snp_id in snp_ids:
             # Add only the FST data for the specific SNP ID to the populations dictionary
@@ -197,17 +201,17 @@ def population_comparison():
                 'fst': population_fst
             }
         
-        print("Population data processed:", populations)
+        # print("Population data processed:", populations)
 
         # Step 4: Render the population comparison page
-        print("Rendering population comparison page...")
+        # print("Rendering population comparison page...")
         return render_template('homepage/population_comparison.html',
                                populations=populations,
                                snp_ids=snp_ids,
                                message="Population comparison statistics are displayed below.")
     
     except Exception as e:
-        print(f"Error retrieving population statistics: {e}")
+        # print(f"Error retrieving population statistics: {e}")
         
         return render_template('homepage/population_comparison.html',
                                populations={},
@@ -223,22 +227,22 @@ def download_snp_data():
     try:
         # Step 1: Get the SNP ID from the form input
         snp_id = request.form.get('snp_id')
-        print(f"Received SNP ID: {snp_id}")  # Debugging statement
+        # print(f"Received SNP ID: {snp_id}")  # Debugging statement
         
         if not snp_id:
             raise ValueError("No SNP ID provided.")
 
         # Step 2: Fetch SNP Data from the Database using the allele_frequency table
         snp_data = db.get_allele_frequency_by_snp(snp_id)
-        print(f"SNP Data fetched: {snp_data}")  # Debugging statement
+        # print(f"SNP Data fetched: {snp_data}")  # Debugging statement
         
         if snp_data is None or snp_data.empty:
-            print("No data found for SNP ID.")  # Debugging statement
+            # print("No data found for SNP ID.")  # Debugging statement
             raise ValueError(f"No data found for SNP ID: {snp_id}")
         
         # Step 3: Fetch Additional SNP Details using get_snp_by_id
         snp_info = db.get_snp_by_id(snp_id)  # Fetch SNP details from SNP_Associations table
-        print(f"SNP Info fetched: {snp_info}")  # Debugging statement
+        # print(f"SNP Info fetched: {snp_info}")  # Debugging statement
 
         if snp_info is None or snp_info.empty:
             raise ValueError(f"No SNP information found for SNP ID: {snp_id}")
@@ -274,7 +278,7 @@ def download_snp_data():
                          download_name=f"{snp_id}_population_data.txt")  # Specify .txt extension
 
     except Exception as e:
-        print(f"Error: {str(e)}")  # Debugging statement
+        # print(f"Error: {str(e)}")  # Debugging statement
         return render_template('homepage/search_error.html', 
                                search_type='population', 
                                search_term=snp_id, 

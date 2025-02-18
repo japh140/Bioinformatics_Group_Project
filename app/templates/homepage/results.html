@@ -19,40 +19,47 @@
 
         {% if results %}
             <h2>Found Results:</h2>
-            <form action="{{ url_for('snp_query.population_comparison') }}" method="post">
-                <!-- Group results by SNP ID -->
-                {% set current_snp = namespace(id=None) %}
-                {% for result in results %}
-                    {% if result.snp_id != current_snp.id %}
-                        {% if current_snp.id is not none %}
-                            </div> <!-- Close previous SNP group -->
-                        {% endif %}
-                        {% set current_snp.id = result.snp_id %}
-                        <!-- Start new SNP group -->
-                        <div class="snp-group">
-                            <h3>SNP: {{ result.snp_id }}</h3>
-                            <!-- Add SNP ID as hidden input for form submission -->
-                            <input type="hidden" name="snp_ids[]" value="{{ result.snp_id }}">
+            {% set snp_ids_added = [] %}  <!-- Track which SNP IDs have been added -->
+
+            <!-- Group results by SNP ID -->
+            {% set current_snp = namespace(id=None) %}
+            {% for result in results %}
+                {% if result.snp_id != current_snp.id %}
+                    {% if current_snp.id is not none %}
+                        </div> <!-- Close previous SNP group -->
                     {% endif %}
+                    {% set current_snp.id = result.snp_id %}
+                    <!-- Start new SNP group -->
+                    <div class="snp-group">
+                        <h3>SNP: {{ result.snp_id }}</h3>
+                {% endif %}
 
-                    <div class="result-item">
-                        <p>Population: {{ result.population }}</p>
-                        <p>Chromosome: {{ result.chromosome }}</p>
-                        <p>Position: {{ result.position }}</p>
-                        <p>P-values: {{ result.p_values|join(', ') }}</p>
-                        <p>Mapped Genes:
-                            {% for gene in result.mapped_genes %}
-                                {% if gene %}
-                                    <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
-                                    {%- if not loop.last %}, {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        </p>
-                        <p>Phenotype: {{ result.phenotype }}</p>
-                    </div>
+                <div class="result-item">
+                    <p>Population: {{ result.population }}</p>
+                    <p>Chromosome: {{ result.chromosome }}</p>
+                    <p>Position: {{ result.position }}</p>
+                    <p>P-values: {{ result.p_values|join(', ') }}</p>
+                    <p>Mapped Genes:
+                        {% for gene in result.mapped_genes %}
+                            {% if gene %}
+                                <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
+                                {%- if not loop.last %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p>Phenotype: {{ result.phenotype }}</p>
+                </div>
+            {% endfor %}
+            </div> <!-- Close last snp-group -->
+
+            <!-- Form for population comparison -->
+            <form action="{{ url_for('snp_query.population_comparison') }}" method="post">
+                {% for result in results %}
+                    {% if result.snp_id not in snp_ids_added %}
+                        <input type="hidden" name="snp_ids" value="{{ result.snp_id }}">
+                        {% set _ = snp_ids_added.append(result.snp_id) %}
+                    {% endif %}
                 {% endfor %}
-                </div> <!-- Close last snp-group -->
-
                 <!-- Single comparison button at the end -->
                 <div class="comparison-section">
                     <button type="submit" class="comparison-link">Compare Population Statistics for All SNPs</button>
