@@ -155,6 +155,15 @@
 ##          WHERE           population LIKE "%<query_string>%""
 ##          ORDER BY        snp_id
 
+"""
+##      def get_fst_value_by_snp_for_empty_population(query_string)
+"""
+##      return:             dataframe of results (empty if no results)
+##          SELECT:         snp_id, FST
+##          FROM            Allele_Frequency
+##          WHERE           snp_id LIKE "%<query_string>%"" AND population IS NULL
+##          ORDER BY        snp_id
+
 
 # Import required libraries
 import sqlite3
@@ -198,7 +207,7 @@ class DatabaseClass:
 
 
     #
-    # Query SNP_Associations by ID. Restricted to global superpopulation. First 20 results returned.
+    # Query SNP_Associations by ID. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_snp_by_id(query_string):
@@ -213,7 +222,7 @@ class DatabaseClass:
 
 
     #
-    # Query SNP_Associations by gene. Restricted to global superpopulation. First 20 results returned.
+    # Query SNP_Associations by gene. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_snp_by_gene(query_string):
@@ -228,7 +237,7 @@ class DatabaseClass:
 
 
     #
-    # Query SNP_Associations by cordinates. Restricted to global superpopulation. First 20 results returned.
+    # Query SNP_Associations by cordinates. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_snp_by_coordinates(chromosome, start, end):
@@ -243,7 +252,7 @@ class DatabaseClass:
     
     
     #
-    # Query Gene_Annotations by gene symbol. Restricted to global superpopulation. First 20 results returned.
+    # Query Gene_Annotations by gene symbol. Restricted to global superpopulation. 
     #    
     @staticmethod
     def get_gene_annotations_by_gene_symbol(query_string):
@@ -258,7 +267,7 @@ class DatabaseClass:
 
 
     #
-    # Query Gene_Annotations by gene id. Restricted to global superpopulation. First 20 results returned.
+    # Query Gene_Annotations by gene id. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_gene_annotations_by_gene_id(query_string):
@@ -273,7 +282,7 @@ class DatabaseClass:
 
 
     #
-    # Query Gene_Annotations by snpid. Restricted to global superpopulation. First 20 results returned.
+    # Query Gene_Annotations by snpid. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_gene_annotations_by_snp(query_string):
@@ -288,7 +297,7 @@ class DatabaseClass:
 
     
     #
-    # Query Population by name. Restricted to global superpopulation. First 20 results returned.
+    # Query Population by name. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_population_by_name(query_string):
@@ -304,7 +313,7 @@ class DatabaseClass:
 
   
     #
-    # Query Population by snp_id. Restricted to global superpopulation. First 20 results returned.
+    # Query Population by snp_id. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_population_by_snp(query_string):
@@ -320,7 +329,7 @@ class DatabaseClass:
 
 
     #
-    # Query SNP_Associations and Gene_Annotations by snpid. Restricted to global superpopulation. First 20 results returned.
+    # Query SNP_Associations and Gene_Annotations by snpid. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_snp_and_gene_by_snp(query_string):
@@ -340,7 +349,7 @@ class DatabaseClass:
 
     
     # 
-    # Query SNP_Associations Population and by snpid. Restricted to global superpopulation. First 20 results returned.
+    # Query SNP_Associations Population and by snpid. Restricted to global superpopulation. 
     #    
     @staticmethod
     def get_snp_and_population_by_snp(query_string):
@@ -357,7 +366,7 @@ class DatabaseClass:
 
 
     #
-    # Query Selection_Stats by population name. Restricted to global superpopulation. First 20 results returned.
+    # Query Selection_Stats by population name. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_summary_stats_by_population(query_string):
@@ -373,7 +382,7 @@ class DatabaseClass:
 
     
     #
-    # Query population Stats. Restricted to global superpopulation. First 20 results returned.
+    # Query population Stats. Restricted to global superpopulation. 
     #    
     @staticmethod
     def get_population_stats():
@@ -388,7 +397,7 @@ class DatabaseClass:
 
 
     #
-    # Query SNP_Associations and Selection_Stats by snpid. Restricted to global superpopulation. First 20 results returned.
+    # Query SNP_Associations and Selection_Stats by snpid. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_summary_stats_by_snp(query_string):
@@ -405,7 +414,7 @@ class DatabaseClass:
 
 
     #
-    # Query Allele_Frequency by snpid. Restricted to global superpopulation. First 20 results returned.
+    # Query Allele_Frequency by snpid. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_allele_frequency_by_snp(query_string):
@@ -421,7 +430,7 @@ class DatabaseClass:
 
 
     #
-    # Query Allele_Frequency by population. Restricted to global superpopulation. First 20 results returned.
+    # Query Allele_Frequency by population. Restricted to global superpopulation. 
     #
     @staticmethod
     def get_fst_by_population(query_string):
@@ -435,7 +444,11 @@ class DatabaseClass:
                  'LIMIT {}').format(DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
-    
+
+
+    #
+    # Query Allele_Frequency by snp. Restricted to global superpopulation. 
+    #    
     @staticmethod
     def get_fst_value_by_snp_for_empty_population(query_string):
         conn = DatabaseClass.get_db()
