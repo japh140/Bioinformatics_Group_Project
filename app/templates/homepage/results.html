@@ -19,55 +19,48 @@
 
         {% if results %}
             <h2>Found Results:</h2>
-            <!-- first group results by SNP ID #} -->
-            {% set current_snp = namespace(id=None) %}
-            {% for result in results %}
-                {% if result.snp_id != current_snp.id %}
-                    {% if current_snp.id is not none %}
-                            <!-- Close previous SNP group and add its comparison button -->
-                            <div class="comparison-section">
-                                <a href="{{ url_for('snp_query.population_comparison', search_data=current_snp.id) }}" class="comparison-link">
-                                    Compare Population Statistics for {{ current_snp.id }}
-                                </a>
-                            </div>
-                        </div> <!-- Close snp-group -->
+            <form action="{{ url_for('snp_query.population_comparison') }}" method="post">
+                <!-- Group results by SNP ID -->
+                {% set current_snp = namespace(id=None) %}
+                {% for result in results %}
+                    {% if result.snp_id != current_snp.id %}
+                        {% if current_snp.id is not none %}
+                            </div> <!-- Close previous SNP group -->
+                        {% endif %}
+                        {% set current_snp.id = result.snp_id %}
+                        <!-- Start new SNP group -->
+                        <div class="snp-group">
+                            <h3>SNP: {{ result.snp_id }}</h3>
+                            <!-- Add SNP ID as hidden input for form submission -->
+                            <input type="hidden" name="snp_ids[]" value="{{ result.snp_id }}">
                     {% endif %}
-                    {% set current_snp.id = result.snp_id %}
-                    <!-- Start new SNP group -->
-                    <div class="snp-group">
-                        <h3>SNP: {{ result.snp_id }}</h3>
-                {% endif %}
 
-                <div class="result-item">
-                    <p>Population: {{ result.population }}</p>
-                    <p>Chromosome: {{ result.chromosome }}</p>
-                    <p>Position: {{ result.position }}</p>
-                    <p>P-values: {{ result.p_values|join(', ') }}</p>
-                    <p>Mapped Genes:
-                        {% for gene in result.mapped_genes %}
-                            {% if gene %}
-                                <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
-                                {%- if not loop.last %}, {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                    </p>
-                    <p>Phenotype: {{ result.phenotype }}</p>
-
-                </div>
-            {% endfor %}
-            {% if results %}
-                <!-- Close last SNP group and add its comparison button -->
-                <div class="comparison-section">
-                    <a href="{{ url_for('snp_query.population_comparison', search_data=current_snp.id) }}" class="comparison-link">
-                        Compare Population Statistics for {{ current_snp.id }}
-                    </a>
-                </div>
+                    <div class="result-item">
+                        <p>Population: {{ result.population }}</p>
+                        <p>Chromosome: {{ result.chromosome }}</p>
+                        <p>Position: {{ result.position }}</p>
+                        <p>P-values: {{ result.p_values|join(', ') }}</p>
+                        <p>Mapped Genes:
+                            {% for gene in result.mapped_genes %}
+                                {% if gene %}
+                                    <a href="{{ url_for('gene.gene_details', gene_symbol=gene) }}">{{ gene }}</a>
+                                    {%- if not loop.last %}, {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p>Phenotype: {{ result.phenotype }}</p>
+                    </div>
+                {% endfor %}
                 </div> <!-- Close last snp-group -->
-            {% endif %}
+
+                <!-- Single comparison button at the end -->
+                <div class="comparison-section">
+                    <button type="submit" class="comparison-link">Compare Population Statistics for All SNPs</button>
+                </div>
+            </form>
         {% else %}
             <p>No results found.</p>
-    {% endif %}
-
-
+        {% endif %}
+    </div>
 </body>
 </html>

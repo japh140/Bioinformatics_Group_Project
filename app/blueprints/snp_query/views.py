@@ -137,64 +137,82 @@ def search_results(search_type, search_term):
                                search_term=search_term,
                                error_message="Error processing search. Please try again later.")
 
-@snp_bp.route('/population-comparison/<search_data>')
-def population_comparison(search_data):
+
+
+@snp_bp.route('/population-comparison', methods=['POST'])
+def population_comparison():
     try:
-        # Fetch FST and population data using the allele frequency table
-        fst_data_df = db.get_allele_frequency_by_snp(search_data)
+        # Step 1: Retrieve all SNP IDs from the form submission
+        snp_ids = request.form.getlist('snp_ids[]')  # Expecting SNP IDs to be sent as a list
+        print("SNP IDs received from the form:", snp_ids)
+        
+        if not snp_ids:
+            raise ValueError("No SNP IDs provided.")
+        
+        # Step 2: Fetch FST values for each SNP ID using the get_fst_value_by_snp_for_empty_population method
+        fst_data = []
+        
+        print("Starting FST data retrieval...")
+        
+        for snp_id in snp_ids:
+            print(f"Processing SNP ID: {snp_id}")
+            
+            # Call the static method to fetch FST data for the SNP with empty population
+            fst_df = db.get_fst_value_by_snp_for_empty_population(snp_id)  # Get FST data for this SNP
+            
+            if fst_df is not None and not fst_df.empty:
+                try:
+                    # Extract the FST value for population=''
+                    fst_value = fst_df['FST'].values[0]
+                    print(f"Extracted FST value for SNP ID {snp_id}: {fst_value}")
+                    fst_data.append({
+                        'snp_id': snp_id,
+                        'fst': fst_value
+                    })
+                except IndexError as e:
+                    print(f"Error extracting FST value for SNP ID {snp_id}: {e}")
+                    # Append 'N/A' if no valid FST value is found
+                    fst_data.append({
+                        'snp_id': snp_id,
+                        'fst': 'N/A'
+                    })
+            else:
+                print(f"Skipping SNP ID {snp_id} due to missing or empty FST data.")
+                # Append 'N/A' if no FST data is found
+                fst_data.append({
+                    'snp_id': snp_id,
+                    'fst': 'N/A'
+                })
+        
+        print("FST data collected:", fst_data)
 
-        # Initialize populations dictionary
+        # Step 3: Process population data
         populations = {}
+        print("Processing population data...")
+        
+        for snp_id in snp_ids:
+            # Add only the FST data for the specific SNP ID to the populations dictionary
+            population_fst = next((item['fst'] for item in fst_data if item['snp_id'] == snp_id), 'N/A')
+            populations[snp_id] = {
+                'fst': population_fst
+            }
+        
+        print("Population data processed:", populations)
 
-        # Check if FST data is available
-        if fst_data_df is not None and not fst_data_df.empty:
-            for index, row in fst_data_df.iterrows():
-                population = row['population']
-                eaf = row['EAF']
-                maf = row['MAF']
-                fst_value = row['FST']
-                
-                # Handle None values for EAF, MAF, and FST
-                if population is None:
-                    population = "Unknown Population"
-                
-                # Ensure proper handling for missing values of EAF, MAF, and FST
-                if eaf is None:
-                    eaf = "N/A"
-                
-                if maf is None:
-                    maf = "N/A"
-                
-                if fst_value is None:
-                    fst_value = "N/A"  # Default value for missing FST data
-                
-                # Add population and FST, EAF, MAF data to dictionary
-                populations[population] = {
-                    'fst': fst_value,
-                    'eaf': eaf,
-                    'maf': maf,
-                    'description': f'Sample population description for {population}'
-                }
-
-            # Render the population comparison page with FST, EAF, and MAF data
-            return render_template('homepage/population_comparison.html',
-                                   populations=populations,
-                                   search_data=search_data,
-                                   message="Population comparison statistics are displayed below.")
-        else:
-            # Handle case where no FST data is found
-            return render_template('homepage/population_comparison.html',
-                                   populations={},
-                                   search_data=search_data,
-                                   message="No population data found for the given SNP.")
+        # Step 4: Render the population comparison page
+        print("Rendering population comparison page...")
+        return render_template('homepage/population_comparison.html',
+                               populations=populations,
+                               snp_ids=snp_ids,
+                               message="Population comparison statistics are displayed below.")
+    
     except Exception as e:
-        # Log the error or print for debugging
         print(f"Error retrieving population statistics: {e}")
+        
         return render_template('homepage/population_comparison.html',
                                populations={},
-                               search_data=search_data,
+                               snp_ids=[],
                                message="Error retrieving population statistics. Please try again later.")
-
 
 
 # Download Button

@@ -13,40 +13,56 @@
     </div>
 
     <div class="container">
-        <h3>Population Comparison for Search: {{ search_data }}</h3>
         {% if message %}
             <div class="info-message">
                 {{ message }}
             </div>
         {% endif %}
+
         <h3>Select Populations to Compare:</h3>
         <div class="population-select">
-            {% for population in populations.keys() %}
             <label>
-                <input type="checkbox" class="population-checkbox" value="{{ population }}">
-                {{ population }}
+                <input type="checkbox" class="population-checkbox" value="Bengali">
+                Bengali
             </label>
-            {% endfor %}
+            <label>
+                <input type="checkbox" class="population-checkbox" value="Gujarati">
+                Gujarati
+            </label>
+            <label>
+                <input type="checkbox" class="population-checkbox" value="Punjabi">
+                Punjabi
+            </label>
+            <label>
+                <input type="checkbox" class="population-checkbox" value="Telugu">
+                Telugu
+            </label>
         </div>
 
+        <!-- Static Table for Fixation Index (FST) -->
         <div id="statistics-table">
             <h5>Fixation Index (FST)</h5>
             <table>
                 <thead>
                     <tr>
-                        <th>Population</th>
-                        <th>EAF</th>
-                        <th>MAF</th>
+                        <th>SNP ID</th>
                         <th>FST</th>
                     </tr>
                 </thead>
-                <tbody id="stats-body-1">
-                    <!-- JavaScript will populate this -->
+                <tbody>
+                    {% for snp_id, data in populations.items() %}
+                        <tr>
+                            <td>{{ snp_id }}</td>
+                            <td>{{ data['fst'] }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
-        
+
+        <!-- Table for population descriptions (dynamic) -->
         <div id="pop-table">
+            <h5>Population Data</h5>
             <table>
                 <thead>
                     <tr>
@@ -55,64 +71,54 @@
                     </tr>
                 </thead>
                 <tbody id="stats-body-2">
-                    <!-- JavaScript will populate this -->
+                    <!-- Table rows will be added dynamically here by JavaScript -->
                 </tbody>
             </table>
         </div>
 
         <div class="result-item">
             <form action="{{ url_for('snp_query.download_snp_data') }}" method="POST">
-                <input type="hidden" name="snp_id" value="{{ search_data }}">
+                <input type="hidden" name="snp_ids" value="{{ snp_ids|join(',') }}">
                 <button type="submit">Download SNP & Population Data</button>
             </form>
         </div>
 
-        <p>Statistics visualisation coming soon. Population descriptions are placeholder.</p>
+        <p>Statistics visualisation coming soon.</p>
     </div>
 
     <script>
-    // Store the population data from Flask
-    const populationData = {{ populations|tojson }};
+        // Data for population descriptions (static values for now)
+        const populationDescriptions = {
+            "Bengali": "Coming soon",
+            "Gujarati": "Coming soon",
+            "Punjabi": "Coming soon",
+            "Telugu": "Coming soon"
+        };
 
-    function updateTable() {
-        const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
-            .map(checkbox => checkbox.value);
+        // Function to update the population data table dynamically
+        function updatePopulationTable() {
+            const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
+                .map(checkbox => checkbox.value);
 
-        // Update statistics table
-        const tbody1 = document.getElementById('stats-body-1');
-        tbody1.innerHTML = ''; // Clear current table
+            // Clear the table body for Population Data
+            const tbody2 = document.getElementById('stats-body-2');
+            tbody2.innerHTML = '';  // Clear previous rows
 
-        // Update descriptions table
-        const tbody2 = document.getElementById('stats-body-2');
-        tbody2.innerHTML = ''; // Clear current table
+            // Add rows for selected populations
+            selectedPopulations.forEach(pop => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${pop}</td>
+                    <td>${populationDescriptions[pop]}</td>
+                `;
+                tbody2.appendChild(row);
+            });
+        }
 
-        selectedPopulations.forEach(pop => {
-            const stats = populationData[pop];
-
-            // Create row for statistics table (with EAF, MAF, and FST)
-            const row1 = document.createElement('tr');
-            row1.innerHTML = `
-                <td>${pop}</td>
-                <td>${stats.eaf}</td>
-                <td>${stats.maf}</td>
-                <td>${stats.fst}</td>
-            `;
-            tbody1.appendChild(row1);
-
-            // Create row for descriptions table
-            const row2 = document.createElement('tr');
-            row2.innerHTML = `
-                <td>${pop}</td>
-                <td>${stats.description}</td>
-            `;
-            tbody2.appendChild(row2);
+        // Add event listeners to checkboxes to update the population table on change
+        document.querySelectorAll('.population-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updatePopulationTable);
         });
-    }
-
-    // Add event listeners to checkboxes
-    document.querySelectorAll('.population-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', updateTable);
-    });
     </script>
 </body>
 </html>

@@ -435,6 +435,18 @@ class DatabaseClass:
                  'LIMIT {}').format(DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
+    
+    @staticmethod
+    def get_fst_value_by_snp_for_empty_population(query_string):
+        conn = DatabaseClass.get_db()
+        query = ('SELECT snp_id, FST '
+             'FROM Allele_Frequency '
+             'WHERE snp_id LIKE "%{}%" AND (population = "" OR population IS NULL) '
+             'ORDER BY snp_id '
+             'LIMIT {}').format(query_string, DatabaseClass.SQLlimit)
+        df = pd.read_sql_query(query, conn)
+        df['FST'] = df['FST'].round(3)
+        return df
 
 
 #
