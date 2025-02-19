@@ -22,7 +22,7 @@ app.register_blueprint(snp_bp)
 app.register_blueprint(db_api)
 app.register_blueprint(gene_bp)
 app.register_blueprint(download_bp)
-app.register_blueprint(plot_bp, url_prefix='/plot')
+app.register_blueprint(plot_bp)
 
 
 init_db_teardown(app)
