@@ -143,7 +143,7 @@ def search_results(search_type, search_term):
 def population_comparison():
     try:
         # Step 1: Retrieve all SNP IDs from the form submission
-        snp_ids = request.form.getlist('snp_ids')  # Expecting SNP IDs to be sent as a list
+        snp_ids = request.form.getlist('snp_ids[]')  # Expecting SNP IDs to be sent as a list
         
         if not snp_ids:
             raise ValueError("No SNP IDs provided.")
@@ -191,22 +191,22 @@ def download_snp_data():
     try:
         # Step 1: Get the SNP ID from the form input
         snp_id = request.form.get('snp_id')
-        #print(f"Received SNP ID: {snp_id}")  # Debugging statement
+        print(f"Received SNP ID: {snp_id}")  # Debugging statement
         
         if not snp_id:
             raise ValueError("No SNP ID provided.")
 
         # Step 2: Fetch SNP Data from the Database using the allele_frequency table
         snp_data = db.get_allele_frequency_by_snp(snp_id)
-        #print(f"SNP Data fetched: {snp_data}")  # Debugging statement
+        print(f"SNP Data fetched: {snp_data}")  # Debugging statement
         
         if snp_data is None or snp_data.empty:
-            #print("No data found for SNP ID.")  # Debugging statement
+            print("No data found for SNP ID.")  # Debugging statement
             raise ValueError(f"No data found for SNP ID: {snp_id}")
         
         # Step 3: Fetch Additional SNP Details using get_snp_by_id
         snp_info = db.get_snp_by_id(snp_id)  # Fetch SNP details from SNP_Associations table
-        #print(f"SNP Info fetched: {snp_info}")  # Debugging statement
+        print(f"SNP Info fetched: {snp_info}")  # Debugging statement
 
         if snp_info is None or snp_info.empty:
             raise ValueError(f"No SNP information found for SNP ID: {snp_id}")
@@ -242,10 +242,9 @@ def download_snp_data():
                          download_name=f"{snp_id}_population_data.txt")  # Specify .txt extension
 
     except Exception as e:
-        #print(f"Error: {str(e)}")  # Debugging statement
+        print(f"Error: {str(e)}")  # Debugging statement
         return render_template('homepage/search_error.html', 
                                search_type='population', 
                                search_term=snp_id, 
                                error_message="Error generating SNP data. Please try again later.")
-
 
