@@ -4,7 +4,7 @@ from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Regexp, ValidationError
 import io
 import csv
-from flask import send_file, request
+from flask import send_file, request,session
 import logging
 
 
@@ -148,56 +148,40 @@ def population_comparison():
         if not snp_ids:
             raise ValueError("No SNP IDs provided.")
         
-        # Step 2: Fetch FST values for each SNP ID using the get_fst_value_by_snp_for_empty_population method
+        # Step 2: Fetch FST values for each SNP ID
         fst_data = []
         
         for snp_id in snp_ids:
-            # Call the static method to fetch FST data for the SNP with empty population
             fst_df = db.get_fst_value_by_snp_for_empty_population(snp_id)  # Get FST data for this SNP
             
             if fst_df is not None and not fst_df.empty:
                 try:
-                    # Extract the FST value for population=''
                     fst_value = fst_df['FST'].values[0]
                     fst_data.append({
                         'snp_id': snp_id,
                         'fst': fst_value
                     })
                 except IndexError:
-                    # Append 'N/A' if no valid FST value is found
                     fst_data.append({
                         'snp_id': snp_id,
                         'fst': 'N/A'
                     })
             else:
-                # Append 'N/A' if no FST data is found
                 fst_data.append({
                     'snp_id': snp_id,
                     'fst': 'N/A'
                 })
-
-        # Step 3: Process population data
-        populations = {}
         
-        for snp_id in snp_ids:
-            # Add only the FST data for the specific SNP ID to the populations dictionary
-            population_fst = next((item['fst'] for item in fst_data if item['snp_id'] == snp_id), 'N/A')
-            populations[snp_id] = {
-                'fst': population_fst
-            }
+        session['fst_data'] = fst_data  # Store the FST data in session
 
-        # Step 4: Render the population comparison page
-        return render_template('homepage/population_comparison.html',
-                               populations=populations,
-                               snp_ids=snp_ids,
-                               message="Population comparison statistics are displayed below.")
+        # Step 3: Redirect to the plot_fst route to generate the plot
+        return redirect(url_for('plot.plot_fst'))
     
     except Exception as e:
         return render_template('homepage/population_comparison.html',
                                populations={},
                                snp_ids=[],
                                message="Error retrieving population statistics. Please try again later.")
-
 
 # Download Button
 logging.basicConfig(level=logging.DEBUG)
@@ -263,3 +247,5 @@ def download_snp_data():
                                search_type='population', 
                                search_term=snp_id, 
                                error_message="Error generating SNP data. Please try again later.")
+
+

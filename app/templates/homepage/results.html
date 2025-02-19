@@ -56,7 +56,7 @@
             <form action="{{ url_for('snp_query.population_comparison') }}" method="post">
                 {% for result in results %}
                     {% if result.snp_id not in snp_ids_added %}
-                        <input type="hidden" name="snp_ids" value="{{ result.snp_id }}">
+                        <input type="hidden" name="snp_ids[]" value="{{ result.snp_id }}">
                         {% set _ = snp_ids_added.append(result.snp_id) %}
                     {% endif %}
                 {% endfor %}

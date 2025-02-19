@@ -252,3 +252,24 @@ body {
     margin-top: 15px;
     text-align: center;
 }
+
+/* Plot Section Styling */
+#plot-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.fst-plot-image {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Optional: Style for 'No plot available' text */
+#plot-section p {
+    color: #7f8c8d;
+    font-style: italic;
+    margin-top: 10px;
+}

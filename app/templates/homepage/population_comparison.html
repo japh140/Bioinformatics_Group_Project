@@ -41,7 +41,6 @@
 
         <!-- Static Table for Fixation Index (FST) -->
         <div id="statistics-table">
-            <h5>Fixation Index (FST)</h5>
             <table>
                 <thead>
                     <tr>
@@ -53,7 +52,7 @@
                     {% for snp_id, data in populations.items() %}
                         <tr>
                             <td>{{ snp_id }}</td>
-                            <td>{{ data['fst'] }}</td>
+                            <td>{{ data['fst'] if data['fst'] != 'N/A' else 'N/A' }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -62,7 +61,7 @@
 
         <!-- Table for population descriptions (dynamic) -->
         <div id="pop-table">
-            <h5>Population Data</h5>
+            <h3>Population Data</h3>
             <table>
                 <thead>
                     <tr>
@@ -83,7 +82,15 @@
             </form>
         </div>
 
-        <p>Statistics visualisation coming soon.</p>
+        <!-- Plot Section -->
+        <div id="plot-section">
+            <h3>Visualisation: FST Values for Selected SNPs</h3>
+            {% if fst_plot %}
+                <img src="{{ fst_plot }}" alt="FST Plot" class="fst-plot-image">
+            {% else %}
+                <p>No plot available.</p>
+            {% endif %}
+        </div>
     </div>
 
     <script>
@@ -107,7 +114,7 @@
             // Add rows for selected populations
             selectedPopulations.forEach(pop => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
+                row.innerHTML = `  
                     <td>${pop}</td>
                     <td>${populationDescriptions[pop]}</td>
                 `;
