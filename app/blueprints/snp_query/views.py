@@ -5,7 +5,7 @@ from wtforms.validators import InputRequired, Regexp, ValidationError
 import io
 import csv
 from flask import send_file, request,session
-import logging
+import numpy as np
 
 
 try:
@@ -193,7 +193,12 @@ def download_snp_data():
         if not fst_data:
             raise ValueError("No FST data found in session.")
 
-        # Step 2: Prepare the table data
+        # Step 2: Calculate average and standard deviation of FST values
+        fst_values = [item['fst'] for item in fst_data if isinstance(item['fst'], (int, float))]
+        average_fst = np.mean(fst_values) if fst_values else 0
+        std_dev_fst = np.std(fst_values) if fst_values else 0
+
+        # Step 3: Prepare the table data
         output = io.StringIO()  # Use StringIO for text-based content
 
         # Write the table header
@@ -231,9 +236,14 @@ def download_snp_data():
                 f"{fst_value}\n"
             )
 
+        # Step 4: Append average and standard deviation to the output
+        output.write("\n")  # Add a newline for separation
+        output.write(f"Average FST: {average_fst:.4f}\n")
+        output.write(f"Standard Deviation of FST: {std_dev_fst:.4f}\n")
+
         output.seek(0)  # Reset the cursor to the start of the StringIO buffer
 
-        # Step 3: Send the plain text file as a download
+        # Step 5: Send the plain text file as a download
         return send_file(
             io.BytesIO(output.getvalue().encode()),
             mimetype='text/plain',  # Set MIME type to plain text
@@ -247,5 +257,4 @@ def download_snp_data():
             'homepage/search_error.html',
             search_type='population',
             search_term='N/A',
-            error_message="Error generating SNP data. Please try again later."
-        )
+            error_message="Error generating SNP data. Please try again later.")
