@@ -36,7 +36,7 @@ def plot_fst():
 
         if not fst_values_for_plot:
             print("No valid FST values to plot.")
-            return render_template('error.html', message="No valid FST values to plot.")
+            return render_template('homepage/search_error.html', message="No valid FST values to plot.")
 
         # Set a fixed bar width
         bar_width = 0.5  # Adjust this value as needed
@@ -80,4 +80,4 @@ def plot_fst():
 
     except Exception as e:
         print(f"Error generating plot: {e}")
-        return render_template('error.html', message=f"Error generating plot: {e}")
+        return render_template('homepage/search_error.html', message=f"Error generating plot: {e}")
