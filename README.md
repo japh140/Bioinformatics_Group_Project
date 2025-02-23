@@ -11,10 +11,11 @@ https://github.com/japh140/Bioinformatics_Group_Project
 
 To install the application
 
-1)	Paste the above URL into the github download page at https://download-directory.github.io/
-2)	Unzip the package into an installation folder of your choosing
-3)	Open a terminal window, change directory to your installation folder, locate the file run.py and type “python run.py”
-4)	Open a browser and type in the following URL: http://127.0.0.1:5000
+1)	Browse to the GitHub download page at https://download-directory.github.io/
+2)	Paste the software location URL into the box and press enter.
+3)	Unzip the package into an installation folder of your choosing
+4)	Open a terminal window, change directory to your installation folder, locate the file run.py and type “python run.py”
+5)	Open a browser and type in the following URL: http://127.0.0.1:5000
 
-A full description of the application with more complete installation instructions can be found in the word document project dopcumentation.docx.
+A full description of the application with more complete installation instructions including prerequisite software requirements can be found in the word document project documentation.docx.
 
