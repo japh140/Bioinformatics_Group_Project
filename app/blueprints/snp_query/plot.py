@@ -17,26 +17,32 @@ plot_bp = Blueprint('plot', __name__)
 
 @plot_bp.route('/plot-fst', methods=['GET', 'POST'])  # Allow both GET and POST
 def plot_fst():
-    print("Entered plot_fst route!")  # Debug: Print entry to the route
+    #print("Entered plot_fst route!")  # Debug: Print entry to the route
     try:
         # Retrieve the FST data from the session
         fst_data = session.get('fst_data', [])
-        print(f"Retrieved FST data from session: {fst_data}")
+        #print(f"Retrieved FST data from session: {fst_data}")
 
         if not fst_data:
-            print("No FST data found in session.")
+            #print("No FST data found in session.")
             raise ValueError("No FST data found in session.")
 
         # Filter the data to get SNP IDs and their corresponding FST values for the plot
         snp_ids_for_plot = [item['snp_id'] for item in fst_data if item['fst'] != 'N/A']
         fst_values_for_plot = [item['fst'] for item in fst_data if item['fst'] != 'N/A']
 
-        print(f"SNP IDs for plot: {snp_ids_for_plot}")
-        print(f"FST values for plot: {fst_values_for_plot}")
+        #print(f"SNP IDs for plot: {snp_ids_for_plot}")
+        #print(f"FST values for plot: {fst_values_for_plot}")
 
         if not fst_values_for_plot:
-            print("No valid FST values to plot.")
-            return render_template('homepage/search_error.html', message="No valid FST values to plot.")
+            #print("No valid FST values to plot.")
+            #return render_template('homepage/search_error.html', message="No valid FST values to plot.")
+            all_snp_ids = [item['snp_id'] for item in fst_data]
+            return render_template('homepage/search_error.html',
+                                   search_type='FST Statistics',
+                                   search_term=', '.join(all_snp_ids) or 'Selected SNPs',
+                                   error_message="No FST values are currently available for these SNPs. The statistics team is still processing this data.") # more informative error message
+
 
         # Set a fixed bar width
         bar_width = 0.5  # Adjust this value as needed
@@ -79,5 +85,5 @@ def plot_fst():
                                message="Population comparison statistics are displayed below.")
 
     except Exception as e:
-        print(f"Error generating plot: {e}")
+        #print(f"Error generating plot: {e}")
         return render_template('homepage/search_error.html', message=f"Error generating plot: {e}")

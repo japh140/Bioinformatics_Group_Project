@@ -75,6 +75,9 @@ def search_results(search_type, search_term):
                     position = int(search_term.split(':')[1])
                     start = end = position
                 df = db.get_snp_by_coordinates(chrom, start, end)
+                # Add this debug print
+                if df is not None and not df.empty:
+                    print("Found SNPs in coordinates:", df['snp_id'].unique())
             case 'gene':
                 df = db.get_snp_by_gene(search_term)
             case _:
@@ -138,25 +141,29 @@ def search_results(search_type, search_term):
                                error_message="Error processing search. Please try again later.")
 
 
-
 @snp_bp.route('/population-comparison', methods=['POST'])
 def population_comparison():
     try:
         # Step 1: Retrieve all SNP IDs from the form submission
-        snp_ids = request.form.getlist('snp_ids[]')  # Expecting SNP IDs to be sent as a list
-        
+        snp_ids = request.form.getlist('snp_ids')  # Expecting SNP IDs to be sent as a list
+        print("SNP IDs received:", snp_ids)
+
         if not snp_ids:
             raise ValueError("No SNP IDs provided.")
-        
+
         # Step 2: Fetch FST values for each SNP ID
         fst_data = []
-        
+        print("Starting FST fetch")
+
         for snp_id in snp_ids:
+            print("Fetching FST for:", snp_id)
             fst_df = db.get_fst_value_by_snp_for_empty_population(snp_id)  # Get FST data for this SNP
-            
+            print("FST data received:", fst_df)
+
             if fst_df is not None and not fst_df.empty:
                 try:
                     fst_value = fst_df['FST'].values[0]
+                    print("FST value:", fst_value)
                     fst_data.append({
                         'snp_id': snp_id,
                         'fst': fst_value
@@ -171,18 +178,18 @@ def population_comparison():
                     'snp_id': snp_id,
                     'fst': 'N/A'
                 })
-        
+
+        print("Final FST data:", fst_data)
         session['fst_data'] = fst_data  # Store the FST data in session
 
         # Step 3: Redirect to the plot_fst route to generate the plot
         return redirect(url_for('plot.plot_fst'))
-    
+
     except Exception as e:
         return render_template('homepage/population_comparison.html',
                                populations={},
                                snp_ids=[],
                                message="Error retrieving population statistics. Please try again later.")
-
 
 # Download Button
 @snp_bp.route('/download-snp-data', methods=['POST'])

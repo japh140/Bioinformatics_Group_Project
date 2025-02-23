@@ -273,3 +273,48 @@ body {
     font-style: italic;
     margin-top: 10px;
 }
+
+.fst-explanation {
+    margin: 20px 0;
+}
+
+.fst-explanation summary {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #f5f6fa;
+    border-radius: 4px;
+}
+
+.explanation-content {
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.explanation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.explanation-table th,
+.explanation-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.explanation-table th {
+    background-color: #f5f6fa;
+}
+
+.info-message.warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
