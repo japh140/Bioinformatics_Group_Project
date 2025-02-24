@@ -460,6 +460,24 @@ class DatabaseClass:
         df = pd.read_sql_query(query, conn)
         df['FST'] = df['FST'].round(3)
         return df
+    
+    #
+    # Query Allele_Frequency by snp and population. Restricted to Northern Europeans from Utah Comparison_population. 
+    # 
+    @staticmethod
+    def get_fst_by_snp_and_population(snp_id, population):
+        conn = DatabaseClass.get_db()
+        query = ('SELECT snp_id, FST, population '
+                 'FROM Allele_Frequency '
+                 'WHERE snp_id LIKE "%{}%" '
+                 'AND population = "{}" '
+                 'AND comparison_population = "Northern Europeans from Utah" '
+                 'ORDER BY snp_id').format(snp_id, population)
+    
+        df = pd.read_sql_query(query, conn)
+
+        return df
+
 
 
 #

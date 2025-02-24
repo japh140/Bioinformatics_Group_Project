@@ -144,52 +144,73 @@ def search_results(search_type, search_term):
 @snp_bp.route('/population-comparison', methods=['POST'])
 def population_comparison():
     try:
-        # Step 1: Retrieve all SNP IDs from the form submission
+        # Step 1: Retrieve SNP IDs and selected populations from the form submission
         snp_ids = request.form.getlist('snp_ids')  # Expecting SNP IDs to be sent as a list
-        print("SNP IDs received:", snp_ids)
+        selected_populations = request.form.getlist('selected_population')  # Get selected populations as a list
 
+        # Debugging prints
+        print("SNP IDs received:", snp_ids)
+        print("Selected Populations:", selected_populations)
+
+        # If no SNP IDs or populations are selected, raise an error
         if not snp_ids:
             raise ValueError("No SNP IDs provided.")
+        
+        # If no population is selected, default to all populations
+        if not selected_populations:
+            # Default to all populations if none are selected
+            selected_populations = ['Bengali', 'Gujarati', 'Punjabi', 'Telugu']
 
-        # Step 2: Fetch FST values for each SNP ID
-        fst_data = []
-        print("Starting FST fetch")
+        # If no selected populations after fallback, raise an error
+        if not selected_populations:
+            raise ValueError("No population selected.")
 
-        for snp_id in snp_ids:
-            print("Fetching FST for:", snp_id)
-            fst_df = db.get_fst_value_by_snp_for_empty_population(snp_id)  # Get FST data for this SNP
-            print("FST data received:", fst_df)
+        # Step 2: Fetch FST values for each SNP ID and selected population
+        fst_data = {}
+        for population in selected_populations:
+            fst_data[population] = {}
+            for snp_id in snp_ids:
+                print(f"Fetching FST for SNP {snp_id} and Population {population}")
+                fst_df = db.get_fst_by_snp_and_population(snp_id, population)  # Use your updated function to fetch FST data
+                print(f"FST data for SNP {snp_id} and Population {population}: {fst_df}")
 
-            if fst_df is not None and not fst_df.empty:
-                try:
-                    fst_value = fst_df['FST'].values[0]
-                    print("FST value:", fst_value)
-                    fst_data.append({
-                        'snp_id': snp_id,
-                        'fst': fst_value
-                    })
-                except IndexError:
-                    fst_data.append({
-                        'snp_id': snp_id,
-                        'fst': 'N/A'
-                    })
-            else:
-                fst_data.append({
-                    'snp_id': snp_id,
-                    'fst': 'N/A'
-                })
+                # Process the FST data
+                if fst_df is not None and not fst_df.empty:
+                    fst_value = fst_df['FST'].values[0] if fst_df['FST'].values[0] != 'N/A' else 'N/A'
+                    fst_data[population][snp_id] = fst_value
+                else:
+                    fst_data[population][snp_id] = 'N/A'
 
-        print("Final FST data:", fst_data)
-        session['fst_data'] = fst_data  # Store the FST data in session
+        # Check if any valid data was found
+        valid_data = any(fst_value != 'N/A' for population in fst_data for fst_value in fst_data[population].values())
+        
+        # If no valid data exists, raise an error to notify the user
+        if not valid_data:
+            print("Warning: No valid FST data found for the selected SNPs and populations.")
 
-        # Step 3: Redirect to the plot_fst route to generate the plot
-        return redirect(url_for('plot.plot_fst'))
+        # Debugging: Check the final data structure
+        print("Fetched FST Data:", fst_data)
+
+        session['fst_data'] = fst_data
+        session['snp_ids'] = snp_ids
+        session['selected_populations'] = selected_populations
+
+        # Step 3: Render the population_comparison.html template directly with the FST data
+        return render_template('homepage/population_comparison.html', 
+                              fst_data=fst_data, 
+                              snp_ids=snp_ids, 
+                              selected_populations=selected_populations,
+                              plot_fst_url=url_for('plot.plot_fst'))
 
     except Exception as e:
-        return render_template('homepage/population_comparison.html',
-                               populations={},
-                               snp_ids=[],
-                               message="Error retrieving population statistics. Please try again later.")
+        # Debugging error message
+        print(f"Error: {str(e)}")
+
+        # Handle error and provide user-friendly message
+        return render_template('homepage/population_comparison.html', 
+                               message=f"Error: {str(e)}. Please try again later.")
+
+
 
 # Download Button
 @snp_bp.route('/download-snp-data', methods=['POST'])

@@ -3,6 +3,7 @@
 <head>
     <title>Population Statistics Comparison</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Add jQuery for AJAX -->
 </head>
 <body>
     <div class="header">
@@ -19,31 +20,31 @@
             </div>
         {% endif %}
 
-        {% if populations.values()|selectattr('fst', 'equalto', 'N/A')|list %}
+        {% set has_na_values = False %}
+        {% for population, snps in fst_data.items() %}
+            {% for snp_id, fst_value in snps.items() %}
+                {% if fst_value == 'N/A' %}
+                    {% set has_na_values = True %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+        {% if has_na_values %}
             <div class="info-message warning">
                 <p>Note: Some SNPs may not have FST values available yet.</p>
             </div>
         {% endif %}
 
+        <!-- Population selection form -->
         <h3>Select Populations to Compare:</h3>
-        <div class="population-select">
-            <label>
-                <input type="checkbox" class="population-checkbox" value="Bengali">
-                Bengali
-            </label>
-            <label>
-                <input type="checkbox" class="population-checkbox" value="Gujarati">
-                Gujarati
-            </label>
-            <label>
-                <input type="checkbox" class="population-checkbox" value="Punjabi">
-                Punjabi
-            </label>
-            <label>
-                <input type="checkbox" class="population-checkbox" value="Telugu">
-                Telugu
-            </label>
-        </div>
+        <form id="population-form" action="{{ url_for('snp_query.population_comparison') }}" method="POST">
+            <!-- All populations are checked by default -->
+            <label><input type="checkbox" name="selected_population" value="Bengali" checked class="population-checkbox"> Bengali</label>
+            <label><input type="checkbox" name="selected_population" value="Gujarati" checked class="population-checkbox"> Gujarati</label>
+            <label><input type="checkbox" name="selected_population" value="Punjabi" checked class="population-checkbox"> Punjabi</label>
+            <label><input type="checkbox" name="selected_population" value="Telugu" checked class="population-checkbox"> Telugu</label>
+            <button type="submit" style="display: none;">Submit Selection</button>
+        </form>
 
         <!-- Table for population descriptions (dynamic) -->
         <div id="pop-table">
@@ -61,31 +62,27 @@
             </table>
         </div>
 
-        <!-- Static Table for Fixation Index (FST) -->
+        <!-- Dynamic Table for Fixation Index (FST) -->
         <div id="statistics-table">
             <h3>Positive Selection Statistics for Chosen SNPs</h3>
             <table>
                 <thead>
-                    <tr>
+                    <tr id="fst-header">
                         <th>SNP ID</th>
-                        <th>FST</th>
+                        <!-- Population columns will be added dynamically here -->
                     </tr>
                 </thead>
-                <tbody>
-                    {% for snp_id, data in populations.items() %}
-                        <tr>
-                            <td>{{ snp_id }}</td>
-                            <td>{{ data['fst'] if data['fst'] != 'N/A' else 'N/A' }}</td>
-                        </tr>
-                    {% endfor %}
+                <tbody id="fst-body">
+                    <!-- Table rows will be added dynamically here by JavaScript -->
                 </tbody>
             </table>
         </div>
+
         <div class="fst-explanation">
             <details>
                 <summary>What do FST scores mean?</summary>
                 <div class="explanation-content">
-                 <p>FST (Fixation Index) is a measure of population differentiation due to genetic structure. It shows how different populations are from each other genetically. The table below is how we decided to filter the data frame with FST statistics.</p>
+                    <p>FST (Fixation Index) is a measure of population differentiation due to genetic structure. It shows how different populations are from each other genetically. The table below is how we decided to filter the data frame with FST statistics.</p>
                     <p>Any FST statistic with a negative score is attributed to sample noise and low sample sizes. </p>
 
                     <h6>FST Value Ranges:</h6>
@@ -114,6 +111,7 @@
                 </div>
             </details>
         </div>
+
         <div class="result-item">
             <form action="{{ url_for('snp_query.download_snp_data') }}" method="POST">
                 <input type="hidden" name="snp_ids" value="{{ snp_ids|join(',') }}">
@@ -124,11 +122,9 @@
         <!-- Plot Section -->
         <div id="plot-section">
             <h3>Visualisation: FST Values for Selected SNPs</h3>
-            {% if fst_plot %}
-                <img src="{{ fst_plot }}" alt="FST Plot" class="fst-plot-image">
-            {% else %}
-                <p>No plot available.</p>
-            {% endif %}
+            <div id="plot-container">
+                <p>Loading plot...</p> <!-- Placeholder for the dynamically loaded plot -->
+            </div>
         </div>
     </div>
 
@@ -161,10 +157,86 @@
             });
         }
 
-        // Add event listeners to checkboxes to update the population table on change
+        // Function to update the FST table dynamically based on selected populations
+        function updateFSTTable() {
+            const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+
+            // Get the FST data for the selected populations from the backend
+            const fstData = {{ fst_data | tojson }};  // Pass the fst_data directly to JavaScript
+
+            // Clear previous table rows
+            const headerRow = document.getElementById('fst-header');
+            const bodyRows = document.getElementById('fst-body');
+            bodyRows.innerHTML = '';  // Clear previous rows
+
+            // Clear only the population columns in the header (keep the "SNP ID" header)
+            const populationHeaders = headerRow.querySelectorAll('th:not(:first-child)');
+            populationHeaders.forEach(header => header.remove());
+
+            // Add population columns to the header
+            selectedPopulations.forEach(pop => {
+                const th = document.createElement('th');
+                th.innerText = pop;
+                headerRow.appendChild(th);
+            });
+
+            // Add rows for each SNP
+            const snpIds = Object.keys(fstData[selectedPopulations[0]] || {});
+            snpIds.forEach(snpId => {
+                const row = document.createElement('tr');
+                const snpCell = document.createElement('td');
+                snpCell.innerText = snpId;
+                row.appendChild(snpCell);
+
+                selectedPopulations.forEach(pop => {
+                    const fstValue = fstData[pop][snpId] || 'N/A';  // If no data, show 'N/A'
+                    const td = document.createElement('td');
+                    td.innerText = fstValue;
+                    row.appendChild(td);
+                });
+
+                bodyRows.appendChild(row);
+            });
+        }
+
+        // Function to fetch and display the plot dynamically
+        function fetchPlot() {
+            const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+            const snpIds = {{ snp_ids | tojson | safe }};  // Pass SNP IDs from the backend
+
+            $.ajax({
+                url: "{{ url_for('plot.plot_fst') }}",  // URL to the plot_fst route
+                method: "POST",
+                data: {
+                    snp_ids: snpIds,
+                    selected_populations: selectedPopulations
+                },
+                success: function(response) {
+                    // Insert the plot into the plot-container div
+                    $('#plot-container').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching plot:", error);
+                    $('#plot-container').html('<p>Error loading plot. Please try again.</p>');  // Show error message
+                }
+            });
+        }
+
+        // Add event listeners to checkboxes to update the table and plot on change
         document.querySelectorAll('.population-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updatePopulationTable);
+            checkbox.addEventListener('change', () => {
+                updateFSTTable();
+                updatePopulationTable();
+                fetchPlot();  // Fetch the plot when populations change
+            });
         });
+
+        // Initial call to populate the table and fetch the plot on page load
+        updateFSTTable();
+        updatePopulationTable();
+        fetchPlot();
     </script>
 </body>
 </html>
