@@ -20,16 +20,7 @@
             </div>
         {% endif %}
 
-        {% set has_na_values = False %}
-        {% for population, snps in fst_data.items() %}
-            {% for snp_id, fst_value in snps.items() %}
-                {% if fst_value == 'N/A' %}
-                    {% set has_na_values = True %}
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
-
-        {% if has_na_values %}
+        {% if 'N/A' in fst_data|string %}
             <div class="info-message warning">
                 <p>Note: Some SNPs may not have FST values available yet.</p>
             </div>
@@ -77,13 +68,13 @@
                 </tbody>
             </table>
         </div>
-
+        <p>All populations were compared against a population called "Northern Europeans from Utah" to obtain these FST values.</p>
         <div class="fst-explanation">
             <details>
                 <summary>What do FST scores mean?</summary>
                 <div class="explanation-content">
                     <p>FST (Fixation Index) is a measure of population differentiation due to genetic structure. It shows how different populations are from each other genetically. The table below is how we decided to filter the data frame with FST statistics.</p>
-                    <p>Any FST statistic with a negative score is attributed to sample noise and low sample sizes. </p>
+                    <p>Any FST statistic with a negative score is attributed to sample noise and low sample sizes. We have converted those to 0 for the purposes of this tool.</p>
 
                     <h6>FST Value Ranges:</h6>
                     <table class="explanation-table">
