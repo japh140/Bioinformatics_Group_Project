@@ -171,7 +171,7 @@ def population_comparison():
             fst_data[population] = {}
             for snp_id in snp_ids:
                 print(f"Fetching FST for SNP {snp_id} and Population {population}")
-                fst_df = db.get_fst_by_snp_and_population(snp_id, population)  # Use your updated function to fetch FST data
+                fst_df = db.get_fst_by_snp_and_population(snp_id, population,'Northern Europeans from Utah')  # Use your updated function to fetch FST data
                 print(f"FST data for SNP {snp_id} and Population {population}: {fst_df}")
 
                 # Process the FST data

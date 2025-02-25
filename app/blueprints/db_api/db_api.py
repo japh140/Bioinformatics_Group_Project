@@ -3,23 +3,23 @@
 ##
 
 """
-##      get_snp_by_id(query_string):
+##      get_snp_by_id(snpid):
 """
 ##      query_string:       snp_id to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, chromosome, position, p_value, mapped_gene, phenotype, population
 ##          FROM            SNP_Associations
-##          WHERE:          snp_id LIKE "%<query_string>%""
+##          WHERE:          snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
 """
-##      get_snp_by_gene(query_string):
+##      get_snp_by_gene(genename):
 """
 ##      query_string:       mapped_gene to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, chromosome, position, p_value, mapped_gene, phenotype, population
 ##          FROM            SNP_Associations
-##          WHERE:          mapped_gene LIKE "%<query_string>%""
+##          WHERE:          mapped_gene LIKE "%<genename>%"
 ##          ORDER BY        snp_id
 
 """
@@ -35,59 +35,59 @@
 ##          ORDER BY        snp_id
 
 """
-##      get_gene_annotations_by_gene_symbol(query_string):
+##      get_gene_annotations_by_gene_symbol(genename):
 """
 ##      query_string:       gene_symbol to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         gene_symbol, gene_id, chromosomal_locus, snp_id, pathway, go_term, category, specificity
 ##          FROM            Gene_Annotations
-##          WHERE:          gene_symbol LIKE "%<query_string>%""
+##          WHERE:          gene_symbol LIKE "%<genename>%"
 ##          ORDER BY        gene_symbol
 
 """
-##      get_gene_annotations_by_gene_id(query_string):
+##      get_gene_annotations_by_gene_id(genename):
 """
 ##      query_string:       gene_id to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         gene_symbol, gene_id, chromosomal_locus, snp_id, pathway, go_term, category, specificity
 ##          FROM            Gene_Annotations
-##          WHERE:          gene_id LIKE "%<query_string>%""
+##          WHERE:          gene_id LIKE "%<genename>%"
 ##          ORDER BY        gene_id
 
 """
-##      get_gene_annotations_by_snp(query_string):
+##      get_gene_annotations_by_snp(snpid):
 """
 ##      query_string:       snp_id to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         gene_symbol, gene_id, chromosomal_locus, snp_id, pathway, go_term, category, specificity
 ##          FROM            Gene_Annotations
-##          WHERE:          snp_id LIKE "%<query_string>%""
+##          WHERE:          snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
 """
-##      def get_population_by_name(query_string):
+##      def get_population_by_name(population):
 """
 ##      query_string:       population_name to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         sample_name, sex, biosample_id, population_code, population_name, superpopulation_code,
 ##                          superpopulation_name, population_elastic_id, data_collections
 ##          FROM            Population
-##          WHERE:          population_name LIKE "%<query_string>%""
+##          WHERE:          population_name LIKE "%<population>%"
 ##          ORDER BY        sample_name
 
 """
-##      def get_population_by_snp(query_string):
+##      def get_population_by_snp(snpid):
 """
 ##      query_string:       snp_id to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, sample_name, sex, biosample_id, population_code, population_name, superpopulation_code,
 ##                          population.superpopulation_name AS superpopulation_name, population_elastic_id, data_collections
 ##          FROM            NP_Associations INNER JOIN Population ON SNP_Associations.population = Population.population_name
-##          WHERE:          snp_id LIKE "%<query_string>%""
+##          WHERE:          snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
 """
-##      def get_snp_and_gene_by_snp(query_string):
+##      def get_snp_and_gene_by_snp(snpid):
 """
 ##      query_string:       snp_id to query
 ##      return:             dataframe of results (empty if no results)
@@ -95,38 +95,38 @@
 ##                          population, gene_symbol, gene_id, chromosomal_locus, Gene_Annotations.snp_id as gene_annotations_snp_id, 
 ##                          pathway, go_term, category, specificity
 ##          FROM            SNP_Associations LEFT JOIN Gene_Annotations ON SNP_Associations.snp_id = Gene_Annotations.snp_id 
-##          WHERE:          SNP_Associations.snp_id LIKE "%<query_string>%""
+##          WHERE:          SNP_Associations.snp_id LIKE "%<snpid>%"
 ##          ORDER BY        SNP_Associations.snp_id
 
 """
-##      def get_snp_and_population_by_snp(query_string):
+##      def get_snp_and_population_by_snp(snpid):
 """
 ##      query_string:       snp_id to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, chromosome, position, p_value, mapped_gene, phenotype, population, sample_name, sex, biosample_id, 
 ##                          population_code, population_name, superpopulation_code, superpopulation_name, population_elastic_id, data_collections
 ##          FROM            SNP_Associations LEFT JOIN SNP_Associations.population = Population.population_name
-##          WHERE:          snp_id LIKE "%<query_string>%""
+##          WHERE:          snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
 """
-##      def get_summary_stats_by_population(query_string):
+##      def get_summary_stats_by_population(population):
 """
 ##      query_string:       population to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         population, tajimas_d, xp_ehh, his, nucleotide_diversity 
 ##          FROM            Selection_Stats
-##          WHERE:          population LIKE "%<query_string>%""
+##          WHERE:          population LIKE "%<population>%"
 ##          ORDER BY        population
 
 """
-##      def get_summary_stats_by_snp(query_string):
+##      def get_summary_stats_by_snp(snpid):
 """
 ##      query_string:       population to query
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity
 ##          FROM            SNP_Associations INNER JOIN Selection_Stats ON SNP_Associations.population = Selection_Stats.population
-##          WHERE:          snp_id LIKE "%<query_string>%""
+##          WHERE:          snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
 """
@@ -138,30 +138,39 @@
 ##          ORDER BY        population
 
 """
-##      def get_allele_frequency_by_snp(query_string)
+##      def get_allele_frequency_by_snp(snpid)
 """
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, FST, population, EAF, MAF
 ##          FROM            Allele_Frequency
-##          WHERE           snp_id LIKE "%<query_string>%""
+##          WHERE           snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
 """
-##      def get_fst_by_population(query_string)
+##      def get_fst_by_population(population)
 """
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, FST, population
 ##          FROM            Allele_Frequency
-##          WHERE           population LIKE "%<query_string>%""
+##          WHERE           population LIKE "%<population>%"
 ##          ORDER BY        snp_id
 
 """
-##      def get_fst_value_by_snp_for_empty_population(query_string)
+##      def get_fst_value_by_snp_for_empty_population(snpid)
 """
 ##      return:             dataframe of results (empty if no results)
 ##          SELECT:         snp_id, FST
 ##          FROM            Allele_Frequency
-##          WHERE           snp_id LIKE "%<query_string>%"" AND population IS NULL
+##          WHERE           snp_id LIKE "%<snpid>%"" AND population IS NULL
+##          ORDER BY        snp_id
+
+"""
+##      def get_fst_by_snp_and_population(snpid, population, comparisonpopulation)
+"""
+##      return:             dataframe of results (empty if no results)
+##          SELECT:         snp_id, FST, population
+##          FROM            Allele_Frequency
+##          WHERE           snp_id LIKE "%<snpid>% AND population=="<population>" AND comparison_population=="<comparisonpopulation>"
 ##          ORDER BY        snp_id
 
 
@@ -454,30 +463,28 @@ class DatabaseClass:
         conn = DatabaseClass.get_db()
         query = ('SELECT snp_id, FST '
              'FROM Allele_Frequency '
-             'WHERE snp_id LIKE "%{}%" AND (population = "" OR population IS NULL) '
+             'WHERE snp_id LIKE "%{}%" AND (population = "" OR population IS NULL) AND superpopulation_name="{}" '
              'ORDER BY snp_id '
-             'LIMIT {}').format(query_string, DatabaseClass.SQLlimit)
+             'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
-        df['FST'] = df['FST'].round(3)
+        df['FST'] = df['FST'].round(3)  # Round to 3dp for screen presentation
         return df
-    
+
+
     #
     # Query Allele_Frequency by snp and population. Restricted to Northern Europeans from Utah Comparison_population. 
     # 
     @staticmethod
-    def get_fst_by_snp_and_population(snp_id, population):
+    def get_fst_by_snp_and_population(snp_id, population, comparisonpopulation):
         conn = DatabaseClass.get_db()
         query = ('SELECT snp_id, FST, population '
                  'FROM Allele_Frequency '
                  'WHERE snp_id LIKE "%{}%" '
-                 'AND population = "{}" '
-                 'AND comparison_population = "Northern Europeans from Utah" '
-                 'ORDER BY snp_id').format(snp_id, population)
-    
+                 'AND population = "{}" AND comparison_population = "{}" AND superpopulation_name="{}" '
+                 'ORDER BY snp_id '
+                 'LIMIT {}').format(snp_id, population, comparisonpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
-
         return df
-
 
 
 #

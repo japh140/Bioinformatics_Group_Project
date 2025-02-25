@@ -328,6 +328,24 @@ assert len(df.columns)==2,                     "\033[91m Error6 : get_fst_value_
 
 
 #
+# Test get_fst_by_snp_and_population
+#
+print('\n\033[94m TESTING: get_fst_by_snp_and_population \033[0m')
+df = db.get_fst_by_snp_and_population('rs7903146','Bengali','Northern Europeans from Utah')
+print(df)
+assert len(df)==1,                              "\033[91m Error1 : get_fst_by_snp_and_population \033[0m"
+assert len(df.columns)==3,                      "\033[91m Error2 : get_fst_by_snp_and_population \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_fst_by_snp_and_population \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error4 : get_fst_by_snp_and_population \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error5 : get_fst_by_snp_and_population \033[0m"
+
+df = db.get_fst_value_by_snp_for_emget_fst_by_snp_and_populationpty_population('Gaijn@#_+','Bengali','Northern Europeans from Utah')
+print(df)
+assert len(df)==0,                             "\033[91m Error6 : get_fst_by_snp_and_population \033[0m"
+assert len(df.columns)==3,                     "\033[91m Error7 : get_fst_by_snp_and_population \033[0m"
+
+
+#
 # All OK
 #
 print ('\n\033[92m EVERYTHING IS WORKING \033[0m')
