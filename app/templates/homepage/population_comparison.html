@@ -109,6 +109,15 @@
                 <button type="submit">Download SNP & Population Data</button>
             </form>
         </div>
+        
+        <!-- Dropdown for selecting stat (FST or nSL) -->
+        <div>
+            <label for="stat-select">Select Summary Statistics:</label>
+            <select id="stat-select">
+                <option value="fst">FST</option>
+                <option value="nsl">nSL</option>
+            </select>
+        </div>
 
         <!-- Plot Section -->
         <div id="plot-section">
@@ -190,19 +199,34 @@
                 bodyRows.appendChild(row);
             });
         }
+        
+        // When the dropdown changes, trigger the plot update
+    document.getElementById('stat-select').addEventListener('change', function() {
+        fetchPlot();  // Fetch the plot for the selected stat
+    });
 
         // Function to fetch and display the plot dynamically
         function fetchPlot() {
+            const selectedStat = document.getElementById('stat-select').value;  // Get selected statistic
             const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
                 .map(checkbox => checkbox.value);
             const snpIds = {{ snp_ids | tojson | safe }};  // Pass SNP IDs from the backend
+            
+            let url; // Declare a variable for the URL
+
+            // Determine the correct URL based on the selected statistic
+            if (selectedStat === 'fst') {
+                url = "{{ url_for('plot.plot_fst') }}";  // URL for FST plot
+            } else if (selectedStat === 'nsl') {
+                url = "{{ url_for('plot.plot_nsl') }}";  // URL for nSL plot
+            }
 
             $.ajax({
-                url: "{{ url_for('plot.plot_fst') }}",  // URL to the plot_fst route
+                url: url,  // USE teh URL based on the selected stat
                 method: "POST",
                 data: {
                     snp_ids: snpIds,
-                    selected_populations: selectedPopulations
+                    selected_populations: selectedPopulations,
                 },
                 success: function(response) {
                     // Insert the plot into the plot-container div
