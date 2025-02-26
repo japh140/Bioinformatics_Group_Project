@@ -216,31 +216,27 @@ def population_comparison():
 
 
 
+
 # Download Button
 @snp_bp.route('/download-snp-data', methods=['POST'])
 def download_snp_data():
     try:
-        # Step 1: Retrieve FST data from the session
-        fst_data = session.get('fst_data', [])
-        if not fst_data:
-            raise ValueError("No FST data found in session.")
+        # Step 1: Retrieve data from the session
+        fst_data = session.get('fst_data', {})  # Combined FST and nSL data
+        snp_ids = session.get('snp_ids', [])    # List of SNP IDs
+        selected_populations = session.get('selected_populations', [])  # Selected populations
 
-        # Step 2: Calculate average and standard deviation of FST values
-        fst_values = [item['fst'] for item in fst_data if isinstance(item['fst'], (int, float))]
-        average_fst = np.mean(fst_values) if fst_values else 0
-        std_dev_fst = np.std(fst_values) if fst_values else 0
+        if not fst_data or not snp_ids or not selected_populations:
+            raise ValueError("No data found in session.")
 
-        # Step 3: Prepare the table data
+        # Step 2: Prepare the table data
         output = io.StringIO()  # Use StringIO for text-based content
 
         # Write the table header
-        output.write("SNP ID\tChromosome\tPosition\tP-value\tMapped Genes\tPhenotype\tFST Value\n")
+        output.write("SNP ID\tChromosome\tPosition\tP-value\tMapped Genes\tPhenotype\tPopulation\tFST Value\tnSL Value\n")
 
-        # Fetch and write data for each SNP ID
-        for item in fst_data:
-            snp_id = item['snp_id']
-            fst_value = item['fst']
-
+        # Fetch and write data for each SNP ID and population
+        for snp_id in snp_ids:
             # Fetch SNP details from the database
             snp_info = db.get_snp_by_id(snp_id)  # Fetch SNP details from SNP_Associations table
             if snp_info is None or snp_info.empty:
@@ -257,16 +253,34 @@ def download_snp_data():
             else:
                 mapped_genes_str = str(mapped_genes)  # Fallback if mapped_gene is not a list
 
-            # Write the row to the output
-            output.write(
-                f"{snp_details.get('snp_id', 'N/A')}\t"
-                f"{snp_details.get('chromosome', 'N/A')}\t"
-                f"{snp_details.get('position', 'N/A')}\t"
-                f"{snp_details.get('p_value', 'N/A')}\t"
-                f"{mapped_genes_str}\t"  # Use the processed mapped genes
-                f"{snp_details.get('phenotype', 'N/A')}\t"
-                f"{fst_value}\n"
-            )
+            # Write data for each population
+            for population in selected_populations:
+                # Get FST and nSL values for the current SNP and population
+                fst_value = fst_data.get(population, {}).get(snp_id, {}).get('fst', 'N/A')
+                nsl_value = fst_data.get(population, {}).get(snp_id, {}).get('nsl', 'N/A')
+
+                # Write the row to the output
+                output.write(
+                    f"{snp_details.get('snp_id', 'N/A')}\t"
+                    f"{snp_details.get('chromosome', 'N/A')}\t"
+                    f"{snp_details.get('position', 'N/A')}\t"
+                    f"{snp_details.get('p_value', 'N/A')}\t"
+                    f"{mapped_genes_str}\t"  # Use the processed mapped genes
+                    f"{snp_details.get('phenotype', 'N/A')}\t"
+                    f"{population}\t"  # Add population column
+                    f"{fst_value}\t"   # Add FST value
+                    f"{nsl_value}\n"   # Add nSL value
+                )
+
+        # Step 3: Calculate average and standard deviation of FST values
+        fst_values = [
+            fst_data[population][snp_id]['fst']
+            for population in selected_populations
+            for snp_id in snp_ids
+            if isinstance(fst_data[population][snp_id]['fst'], (int, float))
+        ]
+        average_fst = np.mean(fst_values) if fst_values else 0
+        std_dev_fst = np.std(fst_values) if fst_values else 0
 
         # Step 4: Append average and standard deviation to the output
         output.write("\n")  # Add a newline for separation
