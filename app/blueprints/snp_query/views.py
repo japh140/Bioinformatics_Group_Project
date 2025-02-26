@@ -158,46 +158,50 @@ def population_comparison():
         
         # If no population is selected, default to all populations
         if not selected_populations:
-            # Default to all populations if none are selected
             selected_populations = ['Bengali', 'Gujarati', 'Punjabi', 'Telugu']
 
         # If no selected populations after fallback, raise an error
         if not selected_populations:
             raise ValueError("No population selected.")
 
-        # Step 2: Fetch FST values for each SNP ID and selected population
-        fst_data = {}
+        # Step 2: Fetch FST and NSL values for each SNP ID and selected population
+        combined_data = {}
+        
         for population in selected_populations:
-            fst_data[population] = {}
+            combined_data[population] = {}
             for snp_id in snp_ids:
-                print(f"Fetching FST for SNP {snp_id} and Population {population}")
-                fst_df = db.get_fst_by_snp_and_population(snp_id, population,'Northern Europeans from Utah')  # Use your updated function to fetch FST data
-                print(f"FST data for SNP {snp_id} and Population {population}: {fst_df}")
+                print(f"Fetching FST and NSL for SNP {snp_id} and Population {population}")
+                # Fetch both FST and NSL data from the database
+                stats_df = db.get_stats_by_snp_and_population(snp_id, population, 'Northern Europeans from Utah')
+                print(f"FST & NSL data for SNP {snp_id} and Population {population}: {stats_df}")
 
-                # Process the FST data
-                if fst_df is not None and not fst_df.empty:
-                    fst_value = fst_df['FST'].values[0] if fst_df['FST'].values[0] != 'N/A' else 'N/A'
-                    fst_data[population][snp_id] = fst_value
+                # Process the FST and NSL data
+                if stats_df is not None and not stats_df.empty:
+                    fst_value = stats_df['FST'].values[0] if stats_df['FST'].values[0] != 'N/A' else 'N/A'
+                    nsl_value = stats_df['NSL'].values[0] if stats_df['NSL'].values[0] != 'N/A' else 'N/A'
+                    combined_data[population][snp_id] = {"fst": fst_value, "nsl": nsl_value}
                 else:
-                    fst_data[population][snp_id] = 'N/A'
+                    combined_data[population][snp_id] = {"fst": 'N/A', "nsl": 'N/A'}
 
         # Check if any valid data was found
-        valid_data = any(fst_value != 'N/A' for population in fst_data for fst_value in fst_data[population].values())
+        valid_data = any(
+            value['fst'] != 'N/A' for population in combined_data for value in combined_data[population].values()
+        )
         
         # If no valid data exists, raise an error to notify the user
         if not valid_data:
             print("Warning: No valid FST data found for the selected SNPs and populations.")
 
         # Debugging: Check the final data structure
-        print("Fetched FST Data:", fst_data)
+        print("Fetched Combined Data:", combined_data)
 
-        session['fst_data'] = fst_data
+        session['fst_data'] = combined_data
         session['snp_ids'] = snp_ids
         session['selected_populations'] = selected_populations
 
-        # Step 3: Render the population_comparison.html template directly with the FST data
+        # Step 3: Render the population_comparison.html template directly with the FST and NSL data
         return render_template('homepage/population_comparison.html', 
-                              fst_data=fst_data, 
+                              fst_data=combined_data, 
                               snp_ids=snp_ids, 
                               selected_populations=selected_populations,
                               plot_fst_url=url_for('plot.plot_fst'))
