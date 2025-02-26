@@ -22,10 +22,6 @@ def plot_fst():
         snp_ids = session.get('snp_ids')
         selected_populations = session.get('selected_populations')
 
-        # Debugging statements to check the inputs
-        print(f"Received SNP IDs: {snp_ids}")
-        print(f"Received selected populations: {selected_populations}")
-
         # Check if populations and SNPs are selected
         if not snp_ids or not selected_populations:
             print("No SNP IDs or populations selected.")
@@ -47,25 +43,16 @@ def plot_fst():
                         'Population': population,
                         'FST': fst_value
                     })
-                    print(f"Adding data for SNP {snp_id}, Population {population}, FST {fst_value}")
-
+                    
         df = pd.DataFrame(plot_data)
-        print(f"DataFrame created: {df}")
-
-        # If no valid data available after processing, show "No plot available" message
-        if df.empty:
-            print("DataFrame is empty. No valid data for plotting.")
-            return jsonify({"message": "No plot available"}), 400
 
         # Generate the interactive grouped bar plot using Plotly
-        print("Generating Plotly bar plot...")
         fig = px.bar(df, x="SNP ID", y="FST", color="Population", barmode="group",
                      labels={"FST": "FST Value", "SNP ID": "SNPs", "Population": "Population"})
         fig.update_layout(title="FST Values for Selected SNPs by Population", xaxis_title="SNP ID", yaxis_title="FST Value")
 
         # Convert the Plotly figure to HTML for embedding
         plot_html = fig.to_html(full_html=False)
-        print("Plot generated successfully.")
 
         return plot_html
 
