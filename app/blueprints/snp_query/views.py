@@ -272,20 +272,31 @@ def download_snp_data():
                     f"{nsl_value}\n"   # Add nSL value
                 )
 
-        # Step 3: Calculate average and standard deviation of FST values
+        # Step 3: Calculate average and standard deviation of FST and nSL values
         fst_values = [
             fst_data[population][snp_id]['fst']
             for population in selected_populations
             for snp_id in snp_ids
             if isinstance(fst_data[population][snp_id]['fst'], (int, float))
         ]
+        nsl_values = [
+            fst_data[population][snp_id]['nsl']
+            for population in selected_populations
+            for snp_id in snp_ids
+            if isinstance(fst_data[population][snp_id]['nsl'], (int, float))
+        ]
+
+        # Calculate statistics
         average_fst = np.mean(fst_values) if fst_values else 0
         std_dev_fst = np.std(fst_values) if fst_values else 0
+        average_nsl = np.mean(nsl_values) if nsl_values else 0
+        std_dev_nsl = np.std(nsl_values) if nsl_values else 0
 
-        # Step 4: Append average and standard deviation to the output
+        # Step 4: Append statistics to the output in the specified format
         output.write("\n")  # Add a newline for separation
-        output.write(f"Average FST: {average_fst:.4f}\n")
-        output.write(f"Standard Deviation of FST: {std_dev_fst:.4f}\n")
+        output.write("\t\t\t\t\t\t\tFST\tnSL\n")  # Header for statistics
+        output.write(f"Mean\t\t\t\t\t\t\t{average_fst:.4f}\t{average_nsl:.4f}\n")
+        output.write(f"Standard Deviation\t\t\t\t\t{std_dev_fst:.4f}\t{std_dev_nsl:.4f}\n")
 
         output.seek(0)  # Reset the cursor to the start of the StringIO buffer
 
