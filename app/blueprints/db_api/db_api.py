@@ -485,6 +485,22 @@ class DatabaseClass:
                  'LIMIT {}').format(snp_id, population, comparisonpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
+    
+    #
+    # Query Allele_Frequency by snp and population. Restricted to Northern Europeans from Utah Comparison_population. 
+    # 
+    @staticmethod
+    def get_stats_by_snp_and_population(snp_id, population, comparisonpopulation):
+        conn = DatabaseClass.get_db()
+        query = ('SELECT snp_id, FST, population, NSL '
+                 'FROM Allele_Frequency_WITH_NSL '
+                 'WHERE snp_id LIKE "%{}%" '
+                 'AND population = "{}" AND comparison_population = "{}" AND superpopulation_name="{}" '
+                 'ORDER BY snp_id '
+                 'LIMIT {}').format(snp_id, population, comparisonpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
+        df = pd.read_sql_query(query, conn)
+        return df
+
 
 
 #

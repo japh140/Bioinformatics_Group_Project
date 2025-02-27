@@ -25,15 +25,6 @@
     margin-top: 10px;
     font-weight: normal;
 }
-/* Container styles */
-.container {
-    max-width: 600px;
-    margin: 20px auto;  /* Added margin to separate from header */
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
 
 /* Style the dropdown */
 #search_type {
@@ -47,9 +38,9 @@
 
 /* Container styles */
 .container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 20px auto;
-    padding: 40px;  /* Increased padding */
+    padding: 20px;  /* Increased padding */
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -317,4 +308,64 @@ body {
     padding: 10px;
     margin: 10px 0;
     border-radius: 4px;
+}
+
+/* Table container with forced scrolling */
+#statistics-table {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    position: relative !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+/* First header row sticky */
+#statistics-table table thead tr:first-child th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background-color: #2c3e50 !important;
+}
+
+/* Second header row sticky */
+#statistics-table table thead tr:last-child th {
+    position: sticky !important;
+    top: 40px !important;
+    z-index: 9 !important;
+    background-color: #2c3e50 !important;
+}
+
+/* First column (SNP IDs) sticky with box-shadow instead of border */
+#statistics-table table tbody tr td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 5 !important;
+    background-color: white !important;
+    box-shadow: 0 0 0 1px #ddd !important; /* Creates a 1px vertical line on the right */
+    border-right: none !important; /* Remove any existing right border */
+}
+
+/* Even rows first cell */
+#statistics-table table tbody tr:nth-child(even) td:first-child {
+    background-color: #f5f6fa !important;
+}
+
+/* Top-left corner cells with box-shadow instead of border */
+#statistics-table table thead tr:first-child th:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 15 !important;
+    background-color: #2c3e50 !important;
+    box-shadow: 0 0 0 1px #666 !important;
+    border-right: none !important;
+}
+
+#statistics-table table thead tr:last-child th:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 14 !important;
+    background-color: #2c3e50 !important;
+    box-shadow: 0 0 0 1px #666 !important;
+    border-right: none !important;
 }

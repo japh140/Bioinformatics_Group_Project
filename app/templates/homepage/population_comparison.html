@@ -22,7 +22,7 @@
 
         {% if 'N/A' in fst_data|string %}
             <div class="info-message warning">
-                <p>Note: Some SNPs may not have FST values available yet.</p>
+                <p>Note: Some SNPs may not have FST or nSL values available yet.</p>
             </div>
         {% endif %}
 
@@ -53,21 +53,26 @@
             </table>
         </div>
 
-        <!-- Dynamic Table for Fixation Index (FST) -->
+        <!-- Dynamic Table for FST and nSL -->
         <div id="statistics-table">
             <h3>Positive Selection Statistics for Chosen SNPs</h3>
             <table>
                 <thead>
-                    <tr id="fst-header">
+                    <tr>
                         <th>SNP ID</th>
-                        <!-- Population columns will be added dynamically here -->
+                        <!-- Headers will be dynamically added here by JavaScript -->
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <!-- Sub-headers will be dynamically added here by JavaScript -->
                     </tr>
                 </thead>
                 <tbody id="fst-body">
-                    <!-- Table rows will be added dynamically here by JavaScript -->
+                    <!-- Table rows for each SNP will be inserted here by JavaScript -->
                 </tbody>
             </table>
         </div>
+
         <h5 style="font-weight: normal;">Note: All populations were compared against a population called "Northern Europeans from Utah" to obtain these FST values.</h5>
         <div class="fst-explanation">
             <details>
@@ -157,53 +162,85 @@
             });
         }
 
+        // Function to update the table headers dynamically
+        function updateTableHeaders() {
+            const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+
+            // Get the table headers
+            const table = document.querySelector('#statistics-table table');
+            const headerRow1 = table.querySelector('thead tr:first-child');
+            const headerRow2 = table.querySelector('thead tr:last-child');
+
+            // Clear existing headers
+            headerRow1.innerHTML = '<th>SNP ID</th>';
+            headerRow2.innerHTML = '<th></th>';
+
+            // Add new headers for selected populations
+            selectedPopulations.forEach(pop => {
+                // Add population header (spanning FST and nSL columns)
+                const populationHeader = document.createElement('th');
+                populationHeader.setAttribute('colspan', '2');
+                populationHeader.innerText = pop;
+                headerRow1.appendChild(populationHeader);
+
+                // Add FST and nSL sub-headers
+                const fstHeader = document.createElement('th');
+                fstHeader.innerText = 'FST';
+                headerRow2.appendChild(fstHeader);
+
+                const nslHeader = document.createElement('th');
+                nslHeader.innerText = 'nSL';
+                headerRow2.appendChild(nslHeader);
+            });
+        }
+
         // Function to update the FST table dynamically based on selected populations
         function updateFSTTable() {
             const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
                 .map(checkbox => checkbox.value);
 
-            // Get the FST data for the selected populations from the backend
+            // Get the FST and nSL data for the selected populations from the backend
             const fstData = {{ fst_data | tojson }};  // Pass the fst_data directly to JavaScript
 
             // Clear previous table rows
-            const headerRow = document.getElementById('fst-header');
             const bodyRows = document.getElementById('fst-body');
             bodyRows.innerHTML = '';  // Clear previous rows
 
-            // Clear only the population columns in the header (keep the "SNP ID" header)
-            const populationHeaders = headerRow.querySelectorAll('th:not(:first-child)');
-            populationHeaders.forEach(header => header.remove());
-
-            // Add population columns to the header
-            selectedPopulations.forEach(pop => {
-                const th = document.createElement('th');
-                th.innerText = pop;
-                headerRow.appendChild(th);
-            });
-
-            // Add rows for each SNP
+            // Get the SNP IDs (keys from the first population's FST data)
             const snpIds = Object.keys(fstData[selectedPopulations[0]] || {});
+
+            // Loop through each SNP ID to create rows
             snpIds.forEach(snpId => {
                 const row = document.createElement('tr');
                 const snpCell = document.createElement('td');
                 snpCell.innerText = snpId;
                 row.appendChild(snpCell);
 
+                // For each population, add FST and nSL values
                 selectedPopulations.forEach(pop => {
-                    const fstValue = fstData[pop][snpId] || 'N/A';  // If no data, show 'N/A'
-                    const td = document.createElement('td');
-                    td.innerText = fstValue;
-                    row.appendChild(td);
+                    const fstValue = fstData[pop][snpId]?.fst || 'N/A';  // If no data, show 'N/A'
+                    const nslValue = fstData[pop][snpId]?.nsl || 'N/A';  // If no data, show 'N/A'
+
+                    // Create cell for FST
+                    const fstCell = document.createElement('td');
+                    fstCell.innerText = fstValue;
+                    row.appendChild(fstCell);
+
+                    // Create cell for nSL
+                    const nslCell = document.createElement('td');
+                    nslCell.innerText = nslValue;
+                    row.appendChild(nslCell);
                 });
 
                 bodyRows.appendChild(row);
             });
         }
-        
+
         // When the dropdown changes, trigger the plot update
-    document.getElementById('stat-select').addEventListener('change', function() {
-        fetchPlot();  // Fetch the plot for the selected stat
-    });
+        document.getElementById('stat-select').addEventListener('change', function() {
+            fetchPlot();  // Fetch the plot for the selected stat
+        });
 
         // Function to fetch and display the plot dynamically
         function fetchPlot() {
@@ -242,13 +279,15 @@
         // Add event listeners to checkboxes to update the table and plot on change
         document.querySelectorAll('.population-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
-                updateFSTTable();
-                updatePopulationTable();
-                fetchPlot();  // Fetch the plot when populations change
+                updateTableHeaders();  // Update table headers
+                updateFSTTable();      // Update table body
+                updatePopulationTable();  // Update population descriptions
+                fetchPlot();           // Fetch the plot when populations change
             });
         });
 
         // Initial call to populate the table and fetch the plot on page load
+        updateTableHeaders();
         updateFSTTable();
         updatePopulationTable();
         fetchPlot();
