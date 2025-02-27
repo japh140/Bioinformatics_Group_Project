@@ -17,10 +17,15 @@ plot_bp = Blueprint('plot', __name__)
 @plot_bp.route('/plot-fst', methods=['POST'])
 def plot_fst():
     try:
-        # Retrieve combined_data, SNP IDs, and selected populations from the session
-        combined_data = session.get('fst_data')  # Assuming combined_data is stored in 'fst_data'
+        # Retrieve snp_ids from the session
         snp_ids = session.get('snp_ids')
-        selected_populations = session.get('selected_populations')
+
+        # Retrieve selected_populations from the request JSON payload
+        request_data = request.get_json()
+        selected_populations = request_data.get('selected_populations')
+
+        # Retrieve combined_data from the session
+        combined_data = session.get('fst_data')
 
         # Debugging: Print the data to verify its structure
         print("Combined Data:", combined_data)
@@ -37,7 +42,7 @@ def plot_fst():
             print("All FST values are 'N/A'. No valid data available.")
             return jsonify({"message": "No plot available"}), 400
 
-        # Prepare data for plotting: Convert FST data into a Pandas DataFrame
+        # Prepare data for plotting
         plot_data = []
         for population in selected_populations:
             for snp_id in snp_ids:
@@ -69,16 +74,20 @@ def plot_fst():
         # Handle any potential error gracefully
         print(f"Error generating plot: {str(e)}")
         return jsonify({"message": "Error generating plot. Please try again later."}), 500
-    
 
 
 @plot_bp.route('/plot-nsl', methods=['POST'])
 def plot_nsl():
     try:
-        # Retrieve combined_data, SNP IDs, and selected populations from the session
-        combined_data = session.get('fst_data')  # Assuming combined_data is stored in 'fst_data'
+        # Retrieve snp_ids from the session
         snp_ids = session.get('snp_ids')
-        selected_populations = session.get('selected_populations')
+
+        # Retrieve selected_populations from the request JSON payload
+        request_data = request.get_json()
+        selected_populations = request_data.get('selected_populations')
+
+        # Retrieve combined_data from the session
+        combined_data = session.get('fst_data')
 
         # Debugging: Print the data to verify its structure
         print("Combined Data:", combined_data)

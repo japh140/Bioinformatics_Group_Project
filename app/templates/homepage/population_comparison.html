@@ -261,10 +261,10 @@
             $.ajax({
                 url: url,  // USE teh URL based on the selected stat
                 method: "POST",
-                data: {
-                    snp_ids: snpIds,
-                    selected_populations: selectedPopulations,
-                },
+                contentType: "application/json",  // Set content type to JSON
+                data: JSON.stringify({  // Send data as JSON
+                    selected_populations: selectedPopulations,  // Only send selected_populations
+                }),
                 success: function(response) {
                     // Insert the plot into the plot-container div
                     $('#plot-container').html(response);
