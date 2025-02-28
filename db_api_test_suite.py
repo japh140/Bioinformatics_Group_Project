@@ -143,54 +143,6 @@ print(df)
 assert len(df)==0,                          "\033[91m Error11 : get_gene_annotations_by_snp \033[0m"
 assert len(df.columns)==8,                  "\033[91m Error12 : get_gene_annotations_by_snp \033[0m"
 
-#
-# Test get_population_by_name
-#
-print('\n\033[94m TESTING: get_population_by_name \033[0m')
-df = db.get_population_by_name('Bengali')
-print(df)
-assert len(df)==25,                            "\033[91m Error1 : get_population_by_name \033[0m"
-assert len(df.columns)==9,                     "\033[91m Error2 : get_population_by_name \033[0m"
-assert df.columns[0]=='sample_name',           "\033[91m Error3 : get_population_by_name \033[0m"
-assert df.columns[1]=='sex',                   "\033[91m Error4 : get_population_by_name \033[0m"
-assert df.columns[2]=='biosample_id',          "\033[91m Error5 : get_population_by_name \033[0m"
-assert df.columns[3]=='population_code',       "\033[91m Error6 : get_population_by_name \033[0m"
-assert df.columns[4]=='population_name',       "\033[91m Error7 : get_population_by_name \033[0m"
-assert df.columns[5]=='superpopulation_code',  "\033[91m Error8 : get_population_by_name \033[0m"
-assert df.columns[6]=='superpopulation_name',  "\033[91m Error9 : get_population_by_name \033[0m"
-assert df.columns[7]=='population_elastic_id', "\033[91m Error10 : get_population_by_name \033[0m"
-assert df.columns[8]=='data_collections',      "\033[91m Error11 : get_population_by_name \033[0m"
-
-df = db.get_population_by_name('Gaijn@#_+')
-print(df)
-assert len(df)==0,                             "\033[91m Error12 : get_population_by_name \033[0m"
-assert len(df.columns)==9,                     "\033[91m Error13 : get_population_by_name \033[0m"
-
-
-#
-# Test get_population_by_snp
-#
-print('\n\033[94m TESTING: get_population_by_snp \033[0m')
-df = db.get_population_by_snp('rs459193')
-print(df)
-assert len(df)==25,                            "\033[91m Error1 : get_population_by_snp \033[0m"
-assert len(df.columns)==10,                    "\033[91m Error2 : get_population_by_snp \033[0m"
-assert df.columns[0]=='snp_id',                "\033[91m Error3 : get_population_by_snp \033[0m"
-assert df.columns[1]=='sample_name',           "\033[91m Error3 : get_population_by_snp \033[0m"
-assert df.columns[2]=='sex',                   "\033[91m Error4 : get_population_by_snp \033[0m"
-assert df.columns[3]=='biosample_id',          "\033[91m Error5 : get_population_by_snp \033[0m"
-assert df.columns[4]=='population_code',       "\033[91m Error6 : get_population_by_snp \033[0m"
-assert df.columns[5]=='population_name',       "\033[91m Error7 : get_population_by_snp \033[0m"
-assert df.columns[6]=='superpopulation_code',  "\033[91m Error8 : get_population_by_snp \033[0m"
-assert df.columns[7]=='superpopulation_name',  "\033[91m Error9 : get_population_by_snp \033[0m"
-assert df.columns[8]=='population_elastic_id', "\033[91m Error10 : get_population_by_snp \033[0m"
-assert df.columns[9]=='data_collections',      "\033[91m Error11 : get_population_by_snp \033[0m"
-
-df = db.get_population_by_snp('Gaijn@#_+')
-print(df)
-assert len(df)==0,                             "\033[91m Error12 : get_population_by_snp \033[0m"
-assert len(df.columns)==10,                    "\033[91m Error13 : get_population_by_snp \033[0m"
-
 
 #
 # Test get_snp_and_gene_by_snp
@@ -221,47 +173,6 @@ df = db.get_snp_and_gene_by_snp('Gaijn@#_+')
 print(df)
 assert len(df)==0,                                  "\033[91m Error18 : get_snp_and_gene_by_snp \033[0m"
 assert len(df.columns)==15,                         "\033[91m Error19 : get_snp_and_gene_by_snp \033[0m"
-
-
-#
-# Test get_summary_stats_by_population
-#
-print('\n\033[94m TESTING: get_summary_stats_by_population \033[0m')
-df = db.get_summary_stats_by_population('Bengali')
-print(df)
-assert len(df)==1,                              "\033[91m Error1 : get_summary_stats_by_population \033[0m"
-assert len(df.columns)==5,                      "\033[91m Error2 : get_summary_stats_by_population \033[0m"
-assert df.columns[0]=='population',             "\033[91m Error3 : get_summary_stats_by_population \033[0m"
-assert df.columns[1]=='tajimas_d',              "\033[91m Error4 : get_summary_stats_by_population \033[0m"
-assert df.columns[2]=='xp_ehh',                 "\033[91m Error5 : get_summary_stats_by_population \033[0m"
-assert df.columns[3]=='his',                    "\033[91m Error6 : get_summary_stats_by_population \033[0m"
-assert df.columns[4]=='nucleotide_diversity',   "\033[91m Error7 : get_summary_stats_by_population \033[0m"
-
-df = db.get_summary_stats_by_population('Gaijn@#_+')
-print(df)
-assert len(df)==0,                              "\033[91m Error8 : get_summary_stats_by_population \033[0m"
-assert len(df.columns)==5,                      "\033[91m Error9 : get_summary_stats_by_population \033[0m"
-
-
-#
-# Test get_summary_stats_by_snp
-#
-print('\n\033[94m TESTING: get_summary_stats_by_snp \033[0m')
-df = db.get_summary_stats_by_snp('rs123')
-print(df)
-assert len(df)==3,                              "\033[91m Error1 : get_summary_stats_by_snp \033[0m"
-assert len(df.columns)==6,                      "\033[91m Error2 : get_summary_stats_by_snp \033[0m"
-assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_summary_stats_by_snp \033[0m"
-assert df.columns[1]=='population',             "\033[91m Error4 : get_summary_stats_by_snp \033[0m"
-assert df.columns[2]=='tajimas_d',              "\033[91m Error5 : get_summary_stats_by_snp \033[0m"
-assert df.columns[3]=='xp_ehh',                 "\033[91m Error6 : get_summary_stats_by_snp \033[0m"
-assert df.columns[4]=='his',                    "\033[91m Error7 : get_summary_stats_by_snp \033[0m"
-assert df.columns[5]=='nucleotide_diversity',   "\033[91m Error8 : get_summary_stats_by_snp \033[0m"
-
-df = db.get_summary_stats_by_snp('Gaijn@#_+')
-print(df)
-assert len(df)==0,                              "\033[91m Error9 : get_summary_stats_by_snp \033[0m"
-assert len(df.columns)==6,                      "\033[91m Error10 : get_summary_stats_by_snp \033[0m"
 
 
 #
@@ -328,21 +239,22 @@ assert len(df.columns)==2,                     "\033[91m Error6 : get_fst_value_
 
 
 #
-# Test get_fst_by_snp_and_population
+# Test get_stats_by_snp_and_population
 #
-print('\n\033[94m TESTING: get_fst_by_snp_and_population \033[0m')
-df = db.get_fst_by_snp_and_population('rs7903146','Bengali','Northern Europeans from Utah')
+print('\n\033[94m TESTING: get_stats_by_snp_and_population \033[0m')
+df = db.get_stats_by_snp_and_population('rs7903146','Bengali','Northern Europeans from Utah')
 print(df)
-assert len(df)==1,                              "\033[91m Error1 : get_fst_by_snp_and_population \033[0m"
-assert len(df.columns)==3,                      "\033[91m Error2 : get_fst_by_snp_and_population \033[0m"
-assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_fst_by_snp_and_population \033[0m"
-assert df.columns[1]=='FST',                    "\033[91m Error4 : get_fst_by_snp_and_population \033[0m"
-assert df.columns[2]=='population',             "\033[91m Error5 : get_fst_by_snp_and_population \033[0m"
+assert len(df)==1,                              "\033[91m Error1 : get_stats_by_snp_and_population \033[0m"
+assert len(df.columns)==4,                      "\033[91m Error2 : get_stats_by_snp_and_population \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_stats_by_snp_and_population \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error4 : get_stats_by_snp_and_population \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error5 : get_stats_by_snp_and_population \033[0m"
+assert df.columns[3]=='NSL',                    "\033[91m Error6 : get_stats_by_snp_and_population \033[0m"
 
-df = db.get_fst_value_by_snp_for_emget_fst_by_snp_and_populationpty_population('Gaijn@#_+','Bengali','Northern Europeans from Utah')
+df = db.get_stats_by_snp_and_population('Gaijn@#_+','Bengali','Northern Europeans from Utah')
 print(df)
-assert len(df)==0,                             "\033[91m Error6 : get_fst_by_snp_and_population \033[0m"
-assert len(df.columns)==3,                     "\033[91m Error7 : get_fst_by_snp_and_population \033[0m"
+assert len(df)==0,                             "\033[91m Error7 : get_stats_by_snp_and_population \033[0m"
+assert len(df.columns)==4,                     "\033[91m Error7 : get_stats_by_snp_and_population \033[0m"
 
 
 #

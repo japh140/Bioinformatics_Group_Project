@@ -65,28 +65,6 @@
 ##          ORDER BY        snp_id
 
 """
-##      def get_population_by_name(population):
-"""
-##      query_string:       population_name to query
-##      return:             dataframe of results (empty if no results)
-##          SELECT:         sample_name, sex, biosample_id, population_code, population_name, superpopulation_code,
-##                          superpopulation_name, population_elastic_id, data_collections
-##          FROM            Population
-##          WHERE:          population_name LIKE "%<population>%"
-##          ORDER BY        sample_name
-
-"""
-##      def get_population_by_snp(snpid):
-"""
-##      query_string:       snp_id to query
-##      return:             dataframe of results (empty if no results)
-##          SELECT:         snp_id, sample_name, sex, biosample_id, population_code, population_name, superpopulation_code,
-##                          population.superpopulation_name AS superpopulation_name, population_elastic_id, data_collections
-##          FROM            NP_Associations INNER JOIN Population ON SNP_Associations.population = Population.population_name
-##          WHERE:          snp_id LIKE "%<snpid>%"
-##          ORDER BY        snp_id
-
-"""
 ##      def get_snp_and_gene_by_snp(snpid):
 """
 ##      query_string:       snp_id to query
@@ -106,26 +84,6 @@
 ##          SELECT:         snp_id, chromosome, position, p_value, mapped_gene, phenotype, population, sample_name, sex, biosample_id, 
 ##                          population_code, population_name, superpopulation_code, superpopulation_name, population_elastic_id, data_collections
 ##          FROM            SNP_Associations LEFT JOIN SNP_Associations.population = Population.population_name
-##          WHERE:          snp_id LIKE "%<snpid>%"
-##          ORDER BY        snp_id
-
-"""
-##      def get_summary_stats_by_population(population):
-"""
-##      query_string:       population to query
-##      return:             dataframe of results (empty if no results)
-##          SELECT:         population, tajimas_d, xp_ehh, his, nucleotide_diversity 
-##          FROM            Selection_Stats
-##          WHERE:          population LIKE "%<population>%"
-##          ORDER BY        population
-
-"""
-##      def get_summary_stats_by_snp(snpid):
-"""
-##      query_string:       population to query
-##      return:             dataframe of results (empty if no results)
-##          SELECT:         Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity
-##          FROM            SNP_Associations INNER JOIN Selection_Stats ON SNP_Associations.population = Selection_Stats.population
 ##          WHERE:          snp_id LIKE "%<snpid>%"
 ##          ORDER BY        snp_id
 
@@ -165,10 +123,10 @@
 ##          ORDER BY        snp_id
 
 """
-##      def get_fst_by_snp_and_population(snpid, population, comparisonpopulation)
+##      def get_stats_by_snp_and_population(snpid, population, comparisonpopulation)
 """
 ##      return:             dataframe of results (empty if no results)
-##          SELECT:         snp_id, FST, population
+##          SELECT:         snp_id, FST, population, NSL
 ##          FROM            Allele_Frequency
 ##          WHERE           snp_id LIKE "%<snpid>% AND population=="<population>" AND comparison_population=="<comparisonpopulation>"
 ##          ORDER BY        snp_id
@@ -302,39 +260,7 @@ class DatabaseClass:
                  'ORDER BY snp_id '
                  'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
-        return df   
-
-    
-    #
-    # Query Population by name. Restricted to global superpopulation. 
-    #
-    @staticmethod
-    def get_population_by_name(query_string):
-        conn = DatabaseClass.get_db()
-        query = ('SELECT sample_name, sex, biosample_id, population_code, population_name, superpopulation_code, '
-                 'superpopulation_name, population_elastic_id, data_collections '
-                 'FROM Population '
-                 'WHERE population_name LIKE "%{}%" AND superpopulation_name="{}"'
-                 'ORDER BY sample_name '
-                 'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
-        df = pd.read_sql_query(query, conn)
-        return df  
-
-  
-    #
-    # Query Population by snp_id. Restricted to global superpopulation. 
-    #
-    @staticmethod
-    def get_population_by_snp(query_string):
-        conn = DatabaseClass.get_db()
-        query = ('SELECT snp_id, sample_name, sex, biosample_id, population_code, population_name, superpopulation_code, '
-                 'Population.superpopulation_name AS superpopulation_name, population_elastic_id, data_collections '
-                 'FROM SNP_Associations INNER JOIN Population ON SNP_Associations.population = Population.population_name '
-                 'WHERE snp_id LIKE "%{}%" AND SNP_Associations.superpopulation_name="{}" AND Population.superpopulation_name="{}" '
-                 'ORDER BY snp_id '
-                 'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
-        df = pd.read_sql_query(query, conn)
-        return df  
+        return df    
 
 
     #
@@ -373,22 +299,6 @@ class DatabaseClass:
         df = pd.read_sql_query(query, conn)
         return df
 
-
-    #
-    # Query Selection_Stats by population name. Restricted to global superpopulation. 
-    #
-    @staticmethod
-    def get_summary_stats_by_population(query_string):
-
-        conn = DatabaseClass.get_db()
-        query = ('SELECT population, tajimas_d, xp_ehh, his, nucleotide_diversity '
-                 'FROM Selection_Stats '
-                 'WHERE population LIKE "%{}%" AND superpopulation_name="{}"'
-                 'ORDER BY population ' 
-                 'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
-        df = pd.read_sql_query(query, conn)
-        return df
-
     
     #
     # Query population Stats. Restricted to global superpopulation. 
@@ -401,23 +311,6 @@ class DatabaseClass:
              'WHERE superpopulation_name="{}"'
              'ORDER BY population ' 
              'LIMIT {}').format(DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
-        df = pd.read_sql_query(query, conn)
-        return df
-
-
-    #
-    # Query SNP_Associations and Selection_Stats by snpid. Restricted to global superpopulation. 
-    #
-    @staticmethod
-    def get_summary_stats_by_snp(query_string):
-
-        conn = DatabaseClass.get_db()
-        query = ('SELECT SNP_Associations.snp_id AS snp_id, Selection_Stats.population AS population, tajimas_d, xp_ehh, his, nucleotide_diversity '
-                 'FROM SNP_Associations '
-                 'LEFT JOIN Selection_Stats ON SNP_Associations.population = Selection_Stats.population '
-                 'WHERE snp_id LIKE "%{}%" AND SNP_Associations.superpopulation_name="{}" AND Selection_Stats.superpopulation_name="{}" '
-                 'ORDER BY snp_id ' 
-                 'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
 
@@ -436,7 +329,6 @@ class DatabaseClass:
                  'LIMIT {}').format(query_string, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
-
 
     #
     # Query Allele_Frequency by population. Restricted to global superpopulation. 
@@ -469,23 +361,8 @@ class DatabaseClass:
         df = pd.read_sql_query(query, conn)
         df['FST'] = df['FST'].round(3)  # Round to 3dp for screen presentation
         return df
-
-
-    #
-    # Query Allele_Frequency by snp and population. Restricted to Northern Europeans from Utah Comparison_population. 
-    # 
-    @staticmethod
-    def get_fst_by_snp_and_population(snp_id, population, comparisonpopulation):
-        conn = DatabaseClass.get_db()
-        query = ('SELECT snp_id, FST, population '
-                 'FROM Allele_Frequency '
-                 'WHERE snp_id LIKE "%{}%" '
-                 'AND population = "{}" AND comparison_population = "{}" AND superpopulation_name="{}" '
-                 'ORDER BY snp_id '
-                 'LIMIT {}').format(snp_id, population, comparisonpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
-        df = pd.read_sql_query(query, conn)
-        return df
     
+
     #
     # Query Allele_Frequency by snp and population. Restricted to Northern Europeans from Utah Comparison_population. 
     # 
@@ -493,14 +370,13 @@ class DatabaseClass:
     def get_stats_by_snp_and_population(snp_id, population, comparisonpopulation):
         conn = DatabaseClass.get_db()
         query = ('SELECT snp_id, FST, population, NSL '
-                 'FROM Allele_Frequency_WITH_NSL '
+                 'FROM Allele_Frequency '
                  'WHERE snp_id LIKE "%{}%" '
                  'AND population = "{}" AND comparison_population = "{}" AND superpopulation_name="{}" '
                  'ORDER BY snp_id '
                  'LIMIT {}').format(snp_id, population, comparisonpopulation, DatabaseClass.superpopulation, DatabaseClass.SQLlimit)
         df = pd.read_sql_query(query, conn)
         return df
-
 
 
 #
