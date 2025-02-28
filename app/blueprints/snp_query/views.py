@@ -197,13 +197,11 @@ def population_comparison():
 
         session['stats_data'] = combined_data
         session['snp_ids'] = snp_ids
-        session['selected_populations'] = selected_populations
 
         # Step 3: Render the population_comparison.html template directly with the FST and NSL data
         return render_template('homepage/population_comparison.html', 
                               fst_data=combined_data, 
                               snp_ids=snp_ids, 
-                              selected_populations=selected_populations,
                               plot_fst_url=url_for('plot.plot_fst'))
 
     except Exception as e:
@@ -224,7 +222,8 @@ def download_snp_data():
         # Step 1: Retrieve data from the session
         fst_data = session.get('stats_data', {})  # Combined FST and nSL data
         snp_ids = session.get('snp_ids', [])    # List of SNP IDs
-        selected_populations = session.get('selected_populations', [])  # Selected populations
+        request_data = request.get_json()
+        selected_populations = request_data.get('selected_populations')  # Selected populations
 
         if not fst_data or not snp_ids or not selected_populations:
             raise ValueError("No data found in session.")

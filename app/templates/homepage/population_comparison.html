@@ -108,11 +108,9 @@
             </details>
         </div>
 
+        <!-- Download Button -->
         <div class="result-item">
-            <form action="{{ url_for('snp_query.download_snp_data') }}" method="POST">
-                <input type="hidden" name="snp_ids" value="{{ snp_ids|join(',') }}">
-                <button type="submit">Download SNP & Population Data</button>
-            </form>
+            <button type="button" id="download-button">Download SNP & Population Data</button>
         </div>
         
         <!-- Dropdown for selecting stat (FST or nSL) -->
@@ -291,6 +289,48 @@
         updateFSTTable();
         updatePopulationTable();
         fetchPlot();
+
+        // Handle download button click
+        document.getElementById('download-button').addEventListener('click', function() {
+            // Get the selected populations
+            const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+
+            // Send data to the download route
+            fetch("{{ url_for('snp_query.download_snp_data') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    selected_populations: selectedPopulations,
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Trigger the file download
+                    return response.blob();
+                } else {
+                    throw new Error('Error downloading file');
+                }
+            })
+            .then(blob => {
+                // Create a link element to trigger the download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'snp_data.txt';  // Specify the file name
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error downloading file. Please try again.');
+            });
+        });
+
     </script>
 </body>
 </html>
