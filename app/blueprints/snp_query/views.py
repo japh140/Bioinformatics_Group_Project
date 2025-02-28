@@ -195,7 +195,7 @@ def population_comparison():
         # Debugging: Check the final data structure
         print("Fetched Combined Data:", combined_data)
 
-        session['fst_data'] = combined_data
+        session['stats_data'] = combined_data
         session['snp_ids'] = snp_ids
         session['selected_populations'] = selected_populations
 
@@ -222,7 +222,7 @@ def population_comparison():
 def download_snp_data():
     try:
         # Step 1: Retrieve data from the session
-        fst_data = session.get('fst_data', {})  # Combined FST and nSL data
+        fst_data = session.get('stats_data', {})  # Combined FST and nSL data
         snp_ids = session.get('snp_ids', [])    # List of SNP IDs
         selected_populations = session.get('selected_populations', [])  # Selected populations
 

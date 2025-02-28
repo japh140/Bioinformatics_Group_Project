@@ -25,7 +25,7 @@ def plot_fst():
         selected_populations = request_data.get('selected_populations')
 
         # Retrieve combined_data from the session
-        combined_data = session.get('fst_data')
+        combined_data = session.get('stats_data')
 
         # Debugging: Print the data to verify its structure
         print("Combined Data:", combined_data)
@@ -87,7 +87,7 @@ def plot_nsl():
         selected_populations = request_data.get('selected_populations')
 
         # Retrieve combined_data from the session
-        combined_data = session.get('fst_data')
+        combined_data = session.get('stats_data')
 
         # Debugging: Print the data to verify its structure
         print("Combined Data:", combined_data)
