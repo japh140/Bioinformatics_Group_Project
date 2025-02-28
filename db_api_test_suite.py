@@ -20,7 +20,7 @@ init_db_teardown(app)
 print('\n\033[94m TESTING: get_snp_by_id() \033[0m')
 df = db.get_snp_by_id('rs123')
 print(df)
-assert len(df)==3,                   "\033[91m Error1 : get_snp_by_id() \033[0m"
+assert len(df)==8,                   "\033[91m Error1 : get_snp_by_id() \033[0m"
 assert len(df.columns)==7,           "\033[91m Error2 : get_snp_by_id() \033[0m"
 assert df.columns[0]=='snp_id',      "\033[91m Error3 : get_snp_by_id() \033[0m"
 assert df.columns[1]=='chromosome',  "\033[91m Error4 : get_snp_by_id() \033[0m"
@@ -198,27 +198,27 @@ assert len(df.columns)==5,                      "\033[91m Error9 : get_allele_fr
 #
 # Test get_fst_by_population
 #
-print('\n\033[94m TESTING: get_allele_frequency_by_snp \033[0m')
+print('\n\033[94m TESTING: get_fst_by_population \033[0m')
 df = db.get_fst_by_population('Punjabi')
 print(df)
-assert len(df)==25,                             "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
-assert len(df.columns)==3,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[1]=='FST',                    "\033[91m Error4 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[2]=='population',             "\033[91m Error5 : get_allele_frequency_by_snp \033[0m"
+assert len(df)==25,                             "\033[91m Error1 : get_fst_by_population \033[0m"
+assert len(df.columns)==3,                      "\033[91m Error2 : get_fst_by_population \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_fst_by_population \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error4 : get_fst_by_population \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error5 : get_fst_by_population \033[0m"
 
 df = db.get_fst_by_population('')
 print(df)
-assert len(df)==25,                             "\033[91m Error6 : get_allele_frequency_by_snp \033[0m"
-assert len(df.columns)==3,                      "\033[91m Error7 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[0]=='snp_id',                 "\033[91m Error8 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[1]=='FST',                    "\033[91m Error9 : get_allele_frequency_by_snp \033[0m"
-assert df.columns[2]=='population',             "\033[91m Error10 : get_allele_frequency_by_snp \033[0m"
+assert len(df)==25,                             "\033[91m Error6 : get_fst_by_population \033[0m"
+assert len(df.columns)==3,                      "\033[91m Error7 : get_fst_by_population \033[0m"
+assert df.columns[0]=='snp_id',                 "\033[91m Error8 : get_fst_by_population \033[0m"
+assert df.columns[1]=='FST',                    "\033[91m Error9 : get_fst_by_population \033[0m"
+assert df.columns[2]=='population',             "\033[91m Error10 : get_fst_by_population \033[0m"
 
 df = db.get_fst_by_population('Gaijn@#_+')
 print(df)
-assert len(df)==0,                             "\033[91m Error11 : get_allele_frequency_by_snp \033[0m"
-assert len(df.columns)==3,                     "\033[91m Error12 : get_allele_frequency_by_snp \033[0m"
+assert len(df)==0,                             "\033[91m Error11 : get_fst_by_population \033[0m"
+assert len(df.columns)==3,                     "\033[91m Error12 : get_fst_by_population \033[0m"
 
 
 #
