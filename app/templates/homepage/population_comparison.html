@@ -107,7 +107,43 @@
                 </div>
             </details>
         </div>
+        <div class="fst-explanation">
+            <details>
+                <summary>What do nSL scores mean?</summary>
+                <div class="explanation-content">
+                    <p>nSL (number of segregating sites by length) is a haplotype-based selection statistic used to detect recent natural selection in a population. It looks at how long stretches of DNA are shared between individuals, assuming that beneficial mutations spread quickly, reducing genetic variation around them. </p>
+                    <p>For the purposes of this tool, nSL scores have been normalised. Since raw nSL values can vary between genomic regions, normalisation helps compare values across different loci. </p>
 
+                    <h6>nSL Value Ranges:</h6>
+                    <table class="explanation-table">
+                        <tr>
+                            <th>nSL Range</th>
+                            <th>Interpretation</th>
+                        </tr>
+                        <tr>
+                            <td>> 2</td>
+                            <td>Strong evidence of positive selection (recent beneficial mutation spreading). </td>
+                        </tr>
+                        <tr>
+                            <td>1 to 2</td>
+                            <td>Moderate evidence of positive selection</td>
+                        </tr>
+                        <tr>
+                            <td>-1 to 1</td>
+                            <td>Neutral - no strong selection signal</td>
+                        </tr>
+                        <tr>
+                            <td>-2 to -1</td>
+                            <td>Moderate evidence of balancing selection or recombination.</td>
+                        </tr>
+                        <tr>
+                            <td><-2</td>
+                            <td>Strong evidence of balancing selection or high recombination rates. </td>
+                        </tr>
+                    </table>
+                </div>
+            </details>
+        </div>
         <!-- Download Button -->
         <div class="result-item">
             <button type="button" id="download-button">Download SNP & Population Data</button>
