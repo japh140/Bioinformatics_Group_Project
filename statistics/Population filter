@@ -1,0 +1,56 @@
+#!/bin/bash
+#$ -N filter_vcfs
+#$ -cwd
+#$ -l h_rt=06:00:00
+#$ -l h_vmem=8G
+#$ -pe smp 1
+#$ -M bt24019@qmul.ac.uk
+#$ -m ea
+#$ -o logs/filter_vcfs_$TASK_ID.out
+#$ -e logs/filter_vcfs_$TASK_ID.err
+#$ -t 1-22  # Run for all chromosomes in parallel (Array Job)
+
+# Load necessary modules
+module load htslib   # Provides bgzip & tabix
+module load bcftools # Provides bcftools view
+
+# Set input and output directories
+VCF_DIR="data/vcf/original_vcfs"
+OUT_DIR="data/vcf/extracted_vcfs"
+POPULATIONS=("BEB" "GIH" "ITU" "STU")  # Add more populations if needed
+SAMPLE_DIR="data/samples"
+
+# Ensure output directories exist
+mkdir -p "$OUT_DIR" logs
+
+# Get the chromosome number from the array job
+chr=$SGE_TASK_ID
+VCF_FILE="${VCF_DIR}/ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"
+
+if [[ -f "$VCF_FILE" ]]; then
+    echo "🔹 Processing Chromosome ${chr}..."
+
+    # Loop through each population and filter VCF
+    for pop in "${POPULATIONS[@]}"; do
+        SAMPLE_FILE="${SAMPLE_DIR}/${pop}_samples.txt"
+        OUT_FILE="${OUT_DIR}/${pop}_chr${chr}_filtered.recode.vcf"
+
+        # Step 1: Filter based on population sample list (output **uncompressed VCF**)
+        bcftools view -S "$SAMPLE_FILE" -O v "$VCF_FILE" -o "$OUT_FILE" || { 
+            echo "❌ Error processing ${pop} - Chromosome ${chr}" >> logs/filter_vcfs_${chr}.err
+            continue
+        }
+
+        # Step 2: Compress with `bgzip`
+        bgzip -f "$OUT_FILE"
+
+        # Step 3: Index the bgzipped VCF
+        tabix -p vcf "${OUT_FILE}.gz"
+
+        echo "✅ Done: ${pop} - Chromosome ${chr} (Filtered, Compressed, Indexed)"
+    done
+else
+    echo "❌ Skipping Chromosome ${chr}, file not found: $VCF_FILE"
+fi
+
+echo "🚀 Chromosome ${chr} processing completed!"
