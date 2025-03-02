@@ -1,0 +1,45 @@
+#checking that snps are biallelic
+
+bcftools view -m2 -M2 -v snps merged_T2D_SNPs.vcf.gz -o filtered_biallelic_T2D_SNPs.vcf.gz
+
+#Removing duolicate snps / rsid positions
+
+bcftools norm -d all filtered_biallelic_T2D_SNPs.vcf.gz -o unique_T2D_SNPs.vcf.gz
+Lines   total/split/joined/realigned/skipped:   1072/0/0/0/0
+
+#VCF format validation check via vcftools or bcftools
+
+bcftools view unique_T2D_SNPs.vcf.gz -o /dev/null: This worked fine 
+
+ #check for vcf compliance error runs
+
+bcftools norm -c s unique_T2D_SNPs.vcf.gz
+
+#Attempting to validate with bcftools norm
+bcftools norm -c x unique_T2D_SNPs.vcf.gz | The output of this indicated an error like this:Expected -a, -f, -m, -D or -d option
+
+
+#checking for mismatches between alleles in VCF
+
+#info warning
+inconsistencies in the INFO fields
+Missing or improperly formatted entries in fields like MEINFO, SVLEN, AF, DP, and AA.
+
+-
+#Triple check if the cleaned is biallelic via this min 2 allele maximums 2 alleles is -m2 -M2
+bcftools view -m2 -M2 -v snps cleaned_T2D_SNPs.vcf.gz | grep -v "^#" | awk '{print $4, $5}' | sort | uniq -c
+allegedly it is biallelic lucky me i guess.
+
+#Checking if the population VCFs are truly unsorted?
+
+bcftools query -f '%CHROM\t%POS\n' CEU_T2D.vcf.gz | awk 'NR>1 && $1==prev_chr && $2 < prev_pos {print prev_chr, prev_pos, "->", $1, $2; exit} {prev_chr=$1; prev_pos=$2}'
+Output of this was nothing at all which means theyre sorted hopefully 
+
+
+#Removing the X chromosomes Autosomes (chr1-22) are always diploid in both males and females.
+for vcf in sorted/*.vcf.gz; do
+    bcftools view --regions 1-22 $vcf -Oz -o ${vcf/.vcf.gz/_autosomal.vcf.gz}
+done
+
+# The code for vcf in sorted/*.vcf.gz; do
+    bcftools view --regions 1-22 $vcf -Oz -o ${vcf/.vcf.gz/_autosomal.vcf.gz}
