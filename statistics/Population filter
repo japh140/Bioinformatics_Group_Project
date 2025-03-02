@@ -10,6 +10,11 @@
 #$ -e logs/filter_vcfs_$TASK_ID.err
 #$ -t 1-22  # Run for all chromosomes in parallel (Array Job)
 
+#Extract population-specific -VCFs
+making text files so i can eventually filter via these codes:
+ awk '$2 == "pop_code" {print $1}' integrated_call_samples_v3.20130502.ALL.panel > pope_code_samples.txt
+
+
 # Load necessary modules
 module load htslib   # Provides bgzip & tabix
 module load bcftools # Provides bcftools view
