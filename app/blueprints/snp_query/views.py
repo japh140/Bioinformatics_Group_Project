@@ -76,8 +76,8 @@ def search_results(search_type, search_term):
                     start = end = position
                 df = db.get_snp_by_coordinates(chrom, start, end)
                 # Add this debug print
-                if df is not None and not df.empty:
-                    print("Found SNPs in coordinates:", df['snp_id'].unique())
+                #if df is not None and not df.empty:
+                    #print("Found SNPs in coordinates:", df['snp_id'].unique())
             case 'gene':
                 df = db.get_snp_by_gene(search_term)
             case _:
@@ -149,8 +149,8 @@ def population_comparison():
         selected_populations = request.form.getlist('selected_population')  # Get selected populations as a list
 
         # Debugging prints
-        print("SNP IDs received:", snp_ids)
-        print("Selected Populations:", selected_populations)
+        #print("SNP IDs received:", snp_ids)
+        #print("Selected Populations:", selected_populations)
 
         # If no SNP IDs or populations are selected, raise an error
         if not snp_ids:
@@ -170,10 +170,10 @@ def population_comparison():
         for population in selected_populations:
             combined_data[population] = {}
             for snp_id in snp_ids:
-                print(f"Fetching FST and NSL for SNP {snp_id} and Population {population}")
+                #print(f"Fetching FST and NSL for SNP {snp_id} and Population {population}")
                 # Fetch both FST and NSL data from the database
                 stats_df = db.get_stats_by_snp_and_population(snp_id, population, 'Northern Europeans from Utah')
-                print(f"FST & NSL data for SNP {snp_id} and Population {population}: {stats_df}")
+                #print(f"FST & NSL data for SNP {snp_id} and Population {population}: {stats_df}")
 
                 # Process the FST and NSL data
                 if stats_df is not None and not stats_df.empty:
@@ -193,7 +193,7 @@ def population_comparison():
             print("Warning: No valid FST data found for the selected SNPs and populations.")
 
         # Debugging: Check the final data structure
-        print("Fetched Combined Data:", combined_data)
+        #print("Fetched Combined Data:", combined_data)
 
         session['stats_data'] = combined_data
         session['snp_ids'] = snp_ids
@@ -206,7 +206,7 @@ def population_comparison():
 
     except Exception as e:
         # Debugging error message
-        print(f"Error: {str(e)}")
+        #print(f"Error: {str(e)}")
 
         # Handle error and provide user-friendly message
         return render_template('homepage/population_comparison.html', 

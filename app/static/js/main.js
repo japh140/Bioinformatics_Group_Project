@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const exampleSpan = document.querySelector('#search-example');
 
     const examples = {
-        'rs': 'Example: rs2028299',
+        'rs': 'Example: rs7903146',
         'coordinates': 'Example: chr15:89831025 or chr15:89831025-89831030',
         'gene': 'Example: TCF7L2'
     };
