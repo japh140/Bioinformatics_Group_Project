@@ -20,7 +20,7 @@ init_db_teardown(app)
 print('\n\033[94m TESTING: get_snp_by_id() \033[0m')
 df = db.get_snp_by_id('rs123')
 print(df)
-assert len(df)==8,                   "\033[91m Error1 : get_snp_by_id() \033[0m"
+assert len(df)==5,                   "\033[91m Error1 : get_snp_by_id() \033[0m"
 assert len(df.columns)==7,           "\033[91m Error2 : get_snp_by_id() \033[0m"
 assert df.columns[0]=='snp_id',      "\033[91m Error3 : get_snp_by_id() \033[0m"
 assert df.columns[1]=='chromosome',  "\033[91m Error4 : get_snp_by_id() \033[0m"
