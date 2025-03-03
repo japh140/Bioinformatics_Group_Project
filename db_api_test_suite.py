@@ -39,7 +39,7 @@ assert len(df.columns)==7,           "\033[91m Error11 : get_snp_by_id() \033[0m
 # Test get_snp_by_gene
 #
 print('\n\033[94m TESTING: get_snp_by_gene \033[0m')
-df = db.get_snp_by_gene('KCNQ1')
+df = db.get_snp_by_gene('TCF7L2')
 print(df)
 assert len(df)==25,                  "\033[91m Error1 : get_snp_by_gene \033[0m"
 assert len(df.columns)==7,           "\033[91m Error2 : get_snp_by_gene \033[0m"
@@ -60,9 +60,9 @@ assert len(df.columns)==7,           "\033[91m Error11 : get_snp_by_gene \033[0m
 # Test get_snp_by_coordinates
 #
 print('\n\033[94m TESTING: get_snp_by_coordinates \033[0m')
-df = db.get_snp_by_coordinates('11', 2500000, 2700000)
+df = db.get_snp_by_coordinates('3', 185785668, 185811292)
 print(df)
-assert len(df)==16,                   "\033[91m Error1 : get_snp_by_coordinates \033[0m"
+assert len(df)==11,                   "\033[91m Error1 : get_snp_by_coordinates \033[0m"
 assert len(df.columns)==7,           "\033[91m Error2 : get_snp_by_coordinates \033[0m"
 assert df.columns[0]=='snp_id',      "\033[91m Error3 : get_snp_by_coordinates \033[0m"
 assert df.columns[1]=='chromosome',  "\033[91m Error4 : get_snp_by_coordinates \033[0m"
@@ -148,9 +148,9 @@ assert len(df.columns)==8,                  "\033[91m Error12 : get_gene_annotat
 # Test get_snp_and_gene_by_snp
 #
 print('\n\033[94m TESTING: get_snp_and_gene_by_snp \033[0m')
-df = db.get_snp_and_gene_by_snp('rs5219')
+df = db.get_snp_and_gene_by_snp('rs1801282')
 print(df)
-assert len(df)==2,                                  "\033[91m Error1 : get_snp_and_gene_by_snp \033[0m"
+assert len(df)==14,                                  "\033[91m Error1 : get_snp_and_gene_by_snp \033[0m"
 assert len(df.columns)==15,                         "\033[91m Error2 : get_snp_and_gene_by_snp \033[0m"
 assert df.columns[ 0]=='snp_associations_snp_id',   "\033[91m Error3 : get_snp_and_gene_by_snp \033[0m"
 assert df.columns[ 1]=='chromosome',                "\033[91m Error4 : get_snp_by_coordinates \033[0m"
