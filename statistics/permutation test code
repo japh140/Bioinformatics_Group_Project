@@ -1,0 +1,9 @@
+import numpy as np
+
+N_permutations = 1000
+null_distribution = []
+
+for i in range(N_permutations):
+    shuffled_nsl = np.random.permutation(df["nSL"])
+    # statistic() could be the mean, max, or other test metric
+    null_distribution.append(statistic(shuffled_nsl))
