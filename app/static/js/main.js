@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const examples = {
         'rs': 'Example: rs7903146',
-        'coordinates': 'Example: chr15:89831025 or chr15:89831025-89831030',
+        'coordinates': 'Example: chr15:89831025 or chr3:185785668-185811292',
         'gene': 'Example: TCF7L2'
     };
 
