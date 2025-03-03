@@ -1,10 +1,10 @@
 **Description:**  
-This file contains statistical analyses and data processing steps related to population genetics. It includes statistical tests such as **nSL (number of Segregating sites by Length) and FST (Fixation Index)** to detect selection signals. Additionally, it covers **data filtering, normalization, and multiple testing corrections**, ensuring high-quality genomic analysis.
+This file contains statistical analyses and data processing steps related to population genetics. It includes statistical tests such as **nSL (number of Segregating sites by Length) and FST (Fixation Index)** to detect selection signals. Additionally, it covers **data filtering, normalisation, and multiple testing corrections**, ensuring high-quality genomic analysis.
 
 # Statistical Analysis for T2D Susceptibility Project
 
 ## Overview
-This project focuses on identifying genetic variants associated with Type 2 Diabetes (T2D) and analyzing positive selection signals in South Asian populations. The statistical components involve various filtering, validation, and statistical tests applied to genomic data.
+This project focuses on identifying genetic variants associated with Type 2 Diabetes (T2D) and analysing positive selection signals in South Asian populations. The statistical components involve various filtering, validation, and statistical tests applied to genomic data.
 
 ## Statistical Components
 
