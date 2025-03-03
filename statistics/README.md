@@ -41,7 +41,7 @@ This project focuses on identifying genetic variants associated with Type 2 Diab
    - **Method**:
      - Uses a **BED file** to extract SNPs in specific genomic regions.
      - Processes **seven populations** in parallel.
-     - Utilizes `bcftools view -R` for targeted filtering.
+     - Utilises `bcftools view -R` for targeted filtering.
      - Ensures efficient indexing of output files.
 
 ## Requirements
@@ -52,7 +52,3 @@ This project focuses on identifying genetic variants associated with Type 2 Diab
 
 ## Execution Instructions
 Run each script in a Unix terminal or HPC environment following the provided comments within the scripts.
-
----
-
-For any issues or improvements, please refer to the original scripts or consult the project documentation.
