@@ -1,159 +1,189 @@
-Statistical Analysis for T2D Susceptibility Project
 
-Description
+# 📊 Statistical Analysis for T2D Susceptibility Project
 
-This repository contains an end-to-end pipeline for identifying and analysing Type 2 Diabetes (T2D)-associated SNPs, with a focus on South Asian populations. It covers data collection, filtering, and annotation, as well as downstream population genetics tests (e.g., FST, nSL), permutation tests, and normalisation of selection signals.
+## 📝 Description  
+This repository contains a comprehensive **end-to-end pipeline** for identifying and analysing **Type 2 Diabetes (T2D)-associated SNPs**, with a particular focus on **South Asian populations**. The pipeline spans **data collection, filtering, annotation**, and **downstream population genetics analyses**, including:
 
-Overview
+- **Genetic differentiation tests** (e.g., FST, nSL)  
+- **Permutation testing** for statistical significance  
+- **Signal normalisation** using Z-score transformations  
 
-Goal: Identify T2D-associated genetic variants and detect positive selection signals in South Asian populations.
+---
 
-Data Sources:
+## 🎯 Project Goals  
+✔ Identify **T2D-associated genetic variants**  
+✔ Detect **positive selection signals** in **South Asian populations**  
+✔ Develop a robust statistical framework for genomic analysis  
 
-T2D-associated SNPs from the T2D Knowledge Portal
+---
 
-1000 Genomes Project VCF files (autosomal) for reference populations.
+## 📂 Data Sources  
 
-Analyses:
+- **T2D-associated SNPs** from the [T2D Knowledge Portal](https://t2d.hugeamp.org)  
+- **1000 Genomes Project** autosomal VCF files ([Download](https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/))  
 
-Population-based VCF filtering
+---
 
-SNP selection & annotation
+## 🔬 Key Analyses  
 
-FST and nSL calculations
+✅ **Population-based VCF filtering**  
+✅ **SNP selection & annotation**  
+✅ **Fixation index (FST) and nSL calculations**  
+✅ **Permutation testing** for significance assessment  
+✅ **Z-score normalisation** to enhance signal detection  
 
-Permutation tests for assessing significance
+---
 
-Normalisation (Z-score) to enhance signal detection
+## 🛠 Requirements  
 
-Requirements
+Ensure you have the following dependencies installed:  
 
+```bash
 bcftools
-
 htslib
-
 vcftools
-
 numpy
+selscan
+```
 
-selscan (for nSL calculations)
+Install missing packages using:  
 
-Pipeline Steps
+```bash
+sudo apt install bcftools htslib vcftools
+pip install numpy
+```
 
-Below is the recommended chronological workflow for extracting, annotating, and statistically analysing T2D-associated SNPs.
+---
 
-Step 1: Collect T2D SNPs
+## ⚡ Pipeline Workflow  
 
-Input:
+### **Step 1: Collect T2D SNPs**  
+📥 **Input:** CSV files containing **T2D-associated SNPs**, e.g.:  
+```
+T2DGGI2024T2DGWASassociations.csv  
+DIAMANTE2022T2DGWASassociations.csv  
+```
+🔹 Extract **rsID, chromosome, position, p-value** from the T2D Knowledge Portal.  
 
-CSV files with T2D-associated SNPs, e.g.:
+---
 
-T2DGGI2024T2DGWASassociations.csv
+### **Step 2: Download 1000 Genomes Data**  
+📌 **Download autosomal VCF files (chromosomes 1-22):**  
+```bash
+wget -r -np -nH --cut-dirs=5 -R index.html \
+"https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/"
+```
+🧬 **These serve as reference panels for South Asian & European populations.**  
 
-DIAMANTE2022T2DGWASassociations.csv
+---
 
-… (rename and organise as needed)
+### **Step 3: Population-Based VCF Filtering**  
+🛠 **Script:** `population_filter.txt`  
+🎯 **Objective:** Extract population-specific samples (e.g., **BEB, GIH, ITU, STU, CEU**)  
 
-Action: Gather SNP info (rsID, chromosome, position, p-value, etc.) from T2D Knowledge Portal or any suitable GWAS dataset.
+🔹 **Method:**  
+```bash
+bcftools view -S sampleID.txt -Oz -o filtered_population.vcf.gz input.vcf.gz
+```
 
-Step 2: Collect 1000 Genomes Data
+🔹 **Parallel Processing (Chromosomes 1-22):**  
+```bash
+for chr in {1..22}; do
+    bcftools view -S sampleID.txt -Oz -o chr${chr}_filtered.vcf.gz chr${chr}.vcf.gz
+done
+```
 
-Download 1000 Genomes Project autosomal VCF files (chromosomes 1-22) from:
+---
 
-https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
-
-These files serve as the reference panels for your populations of interest (e.g., South Asian & European).
-
-Step 3: Population-Based VCF Filtering
-
-Script: Population filter.txt (example)
-
-Purpose: Filter the 1000 Genome VCF to retain samples for specific populations (e.g., BEB, GIH, ITU, STU for South Asians and one European group).
-
-Method:
-
-Use bcftools and htslib to subset each chromosome’s VCF by population metadata (e.g., sampleID.txt).
-
-Parallelise across chromosomes 1-22.
-
-Compress and index results for downstream steps.
-
-Step 4: Extract Chromosome Positions
-
-Script: extract_chrom_positions.py
-
-Purpose: Generate a list of unique chromosome-position pairs from the T2D SNP CSV files.
-
-Method:
-
+### **Step 4: Extract Chromosome Positions**  
+🛠 **Script:** `extract_chrom_positions.py`  
+```bash
 python3 extract_chrom_positions.py
+```
+🔹 **Output:** `t2d_chrom_position.txt` (used to filter VCF files)  
 
-This will produce, for example, t2d_chrom_position.txt, used to filter VCF files in the next step.
+---
 
-Step 5: Filter SNPs from Autosomal VCF Files
-
-Purpose: Keep only T2D-associated SNPs in the VCF.
-
-Method (example):
-
+### **Step 5: Filter SNPs from Autosomal VCF Files**  
+🛠 **Command:**  
+```bash
 ls ALL.chr*.vcf.gz | parallel -j 4 'vcftools --gzvcf {} \
-  --positions t2d_chrom_position.txt \
-  --recode --out {/.}_filtered'
+  --positions t2d_chrom_position.txt --recode --out {/.}_filtered'
+```
+🔹 **Output:** `ALL.chrX_filtered.recode.vcf`  
 
-Result: ALL.chrX_filtered.recode.vcf files containing only T2D-associated SNPs for each chromosome.
+---
 
-Step 6: Merge Filtered VCF Files
+### **Step 6: Merge Filtered VCF Files**  
+```bash
+bcftools concat ALL.chr*.vcf_filtered.recode.vcf -O z -o all_chromosomes.vcf.gz
+```
+🔹 **Output:** `all_chromosomes.vcf.gz` (Merged T2D-associated SNPs)  
 
-Purpose: Concatenate all per-chromosome filtered VCF files into one.
+---
 
-Method:
-
-bcftools concat ALL.chr*.vcf_filtered.recode.vcf \
-  -O z -o all_chromosomes.vcf.gz
-
-Output: all_chromosomes.vcf.gz (merged T2D-associated SNPs).
-
-Step 7: Annotate VCF with rsIDs
-
-Script: annotate_merged_vcf_withsnps.py
-
-Purpose: Match each variant to its known rsID from the T2D SNP list (if missing).
-
-Method:
-
+### **Step 7: Annotate VCF with rsIDs**  
+🛠 **Script:** `annotate_merged_vcf_withsnps.py`  
+```bash
 python3 annotate_merged_vcf_withsnps.py
+```
+🔹 **Output:** `snps_annotated_all_chromosomes.vcf.gz`  
 
-Output: snps_annotated_all_chromosomes.vcf.gz
+---
 
-Step 8: Calculate FST (Fixation Index)
-
-Purpose: Compare allele frequency differences between South Asian and European populations.
-
-Method: Using vcftools:
-
+### **Step 8: Calculate FST (Fixation Index)**  
+```bash
 vcftools --gzvcf snps_annotated_all_chromosomes.vcf.gz \
   --weir-fst-pop Punjabi_sampleID.txt \
   --weir-fst-pop CEU_samples.txt \
   --out Fst_results_Punjabi_CEU
+```
+🔹 **Repeat for other populations** (GIH, ITU, BEB vs. European reference).  
 
-Repeat for other populations (GIH, ITU, BEB) vs. European references.
+---
 
-Step 9: Normalise Selection Signals
+### **Step 9: Normalisation of Selection Signals**  
+📌 **Goal:** Enhance **outlier detection** and facilitate **cross-population comparisons**  
+🛠 **Method:** Z-score transformation applied to **nSL** and optionally **FST** values.  
 
-Purpose: Standardise selection statistics to enhance the visibility of outliers.
+```python
+import numpy as np
 
-Method:
+def normalise_zscore(data):
+    return (data - np.mean(data)) / np.std(data)
 
-Apply Z-score transformation to nSL (and optionally FST) values.
+normalised_values = normalise_zscore(selection_signals)
+```
 
-Facilitate cross-population comparisons.
+---
 
-Improve clarity in visualisations (e.g., Manhattan plots).
+## 🏆 Notes & Considerations  
 
-Notes
+📌 **Liftover:** Ensure genomic positions match reference assembly (GRCh37 vs. GRCh38).  
+📌 **Parallelisation:** Recommended for computationally intensive steps (e.g., selscan).  
+📌 **Script Adjustments:** Update file paths, sample IDs, and variable names accordingly.  
 
-Filtering SNPs by Genomic Positions may require a Liftover step if your GWAS data uses a different reference assembly (e.g., GRCh37 vs GRCh38).
+---
 
-Parallelisation is highly recommended for computationally heavy steps like selscan or bcftools tasks.
+## 📜 Citations & References  
 
-Update any scripts with your file paths, sample IDs, and naming conventions.
+- **T2D Knowledge Portal** - [Website](https://t2d.hugeamp.org/)  
+- **1000 Genomes Project** - [Website](https://www.internationalgenome.org/)  
+- **GWAS Catalogue** - [Website](https://www.ebi.ac.uk/gwas/)  
+- **Functional Annotations** - [Gene Ontology](https://geneontology.org/)  
+
+---
+
+## 👥 Contributors  
+
+- **[Your Name]** - Project Lead  
+- **[Teammates]** - Contributors  
+
+📌 **Contact:** For queries, open an issue or reach out via email.  
+
+---
+
+## ⭐ Acknowledgements  
+This project is part of the **MSc Bioinformatics Software Development Group Project 2025** at QMUL.  
+
+🚀 **If you find this repository useful, give it a star!** ⭐  
