@@ -1,0 +1,186 @@
+# Statistical Analysis for T2D Susceptibility Project
+
+## Description
+This repository contains an end-to-end pipeline for identifying and analyzing **Type 2 Diabetes (T2D)-associated SNPs**, with a focus on **South Asian** populations. It covers data collection, filtering, and annotation, as well as downstream **population genetics** tests (e.g., **FST**, **nSL**), **permutation tests**, and **normalization** of selection signals.
+
+## Overview
+- **Goal**: Identify T2D-associated genetic variants and detect **positive selection** signals in South Asian populations.  
+- **Data Sources**:  
+  - T2D-associated SNPs from the [T2D Knowledge Portal](https://t2d.hugeamp.org/)  
+  - 1000 Genomes Project VCF files (autosomal) for reference populations.  
+- **Analyses**:  
+  1. **Population-based VCF filtering**  
+  2. **SNP selection & annotation**  
+  3. **FST** and **nSL** calculations  
+  4. **Permutation tests** for assessing significance  
+  5. **Normalization** (Z-score) to enhance signal detection  
+
+## Requirements
+- [bcftools](http://samtools.github.io/bcftools/bcftools.html)
+- [htslib](http://www.htslib.org/)
+- [vcftools](http://vcftools.sourceforge.net/)
+- [numpy](https://numpy.org/)
+- [selscan](https://github.com/szpiech/selscan) (for nSL calculations)
+
+---
+
+# Pipeline Steps
+
+Below is the recommended chronological workflow for extracting, annotating, and statistically analyzing T2D-associated SNPs.
+
+## Step 1: Collect T2D SNPs
+- **Input**:  
+  - CSV files with T2D-associated SNPs, e.g.:
+    - `T2DGGI2024T2DGWASassociations.csv`
+    - `DIAMANTE2022T2DGWASassociations.csv`
+    - … (rename and organize as needed)
+- **Action**: Gather SNP info (rsID, chromosome, position, p-value, etc.) from T2D Knowledge Portal or any suitable GWAS dataset.
+
+## Step 2: Collect 1000 Genomes Data
+- Download **1000 Genomes Project** autosomal VCF files (chromosomes 1-22) from:
+  ```
+  https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
+  ```
+- These files serve as the reference panels for your populations of interest (e.g., South Asian & European).
+
+## Step 3: Population-Based VCF Filtering
+- **Script**: `Population filter.txt` (example)
+- **Purpose**: Filter the 1000 Genome VCF to retain samples for specific populations (e.g., **BEB, GIH, ITU, STU** for South Asians and one European group).
+- **Method**:
+  1. Use **bcftools** and **htslib** to subset each chromosome’s VCF by population metadata (e.g., `sampleID.txt`).
+  2. Parallelize across chromosomes 1-22.  
+  3. Compress and index results for downstream steps.
+
+## Step 4: Extract Chromosome Positions
+- **Script**: `extract_chrom_positions.py`
+- **Purpose**: Generate a list of unique chromosome-position pairs from the T2D SNP CSV files.
+- **Method**:  
+  ```bash
+  python3 extract_chrom_positions.py
+  ```
+  This will produce, for example, `t2d_chrom_position.txt`, used to filter VCF files in the next step.
+
+## Step 5: Filter SNPs from Autosomal VCF Files
+- **Purpose**: Keep only T2D-associated SNPs in the VCF.
+- **Method** (example):
+  ```bash
+  ls ALL.chr*.vcf.gz | parallel -j 4 'vcftools --gzvcf {} \
+    --positions t2d_chrom_position.txt \
+    --recode --out {/.}_filtered'
+  ```
+- **Result**: `ALL.chrX_filtered.recode.vcf` files containing only T2D-associated SNPs for each chromosome.
+
+## Step 6: Merge Filtered VCF Files
+- **Purpose**: Concatenate all per-chromosome filtered VCF files into one.
+- **Method**:
+  ```bash
+  bcftools concat ALL.chr*.vcf_filtered.recode.vcf \
+    -O z -o all_chromosomes.vcf.gz
+  ```
+- **Output**: `all_chromosomes.vcf.gz` (merged T2D-associated SNPs).
+
+## Step 7: Annotate VCF with rsIDs
+- **Script**: `annotate_merged_vcf_withsnps.py`
+- **Purpose**: Match each variant to its known **rsID** from the T2D SNP list (if missing).
+- **Method**:
+  ```bash
+  python3 annotate_merged_vcf_withsnps.py
+  ```
+- **Output**: `snps_annotated_all_chromosomes.vcf.gz`
+
+## Step 8: Calculate FST (Fixation Index)
+- **Purpose**: Compare allele frequency differences between South Asian and European populations.
+- **Method**: Using **vcftools**:
+  ```bash
+  vcftools --gzvcf snps_annotated_all_chromosomes.vcf.gz \
+    --weir-fst-pop Punjabi_sampleID.txt \
+    --weir-fst-pop CEU_samples.txt \
+    --out Fst_results_Punjabi_CEU
+  ```
+  Repeat for other populations (GIH, ITU, BEB) vs. European references.
+
+## Step 9: Process FST Output
+- **Output File**: `Fst_results_{POP}_CEU.weir.fst`
+- Convert or parse the `.weir.fst` file (e.g., to `.xlsx`) for further analysis.
+
+## Step 10: Annotate FST Results with rsIDs
+- **Scripts**:
+  - `annotate_Fst_with_rsID.py`
+  - `remove_duplicates_from_Fst.py`
+- **Purpose**: Integrate rsIDs into the FST results and remove duplicates.
+- **Method**:
+  ```bash
+  python3 annotate_Fst_with_rsID.py
+  python3 remove_duplicates_from_Fst.py
+  ```
+
+## Step 11: Calculate nSL (Number of Segregating Sites by Length)
+- **Purpose**: Detect haplotype-based selection signals within South Asian populations.
+- **Tool**: [selscan](https://github.com/szpiech/selscan)
+- **Method**:
+  1. Convert to biallelic format (if needed) and normalize:
+     ```bash
+     bcftools view -m2 -M2 -v snps PJL_chr6_filtered.recode.vcf.gz -Oz -o PJL_chr6_filtered_biallelic.vcf.gz
+     bcftools norm -m-any --check-ref e --threads 4 -Oz -o PJL_chr6_filtered.final.vcf.gz PJL_chr6_filtered_biallelic.vcf.gz
+     ```
+  2. Run selscan:
+     ```bash
+     selscan --nsl --keep-low-freq \
+       --vcf PJL_chr6_filtered.final.vcf.gz \
+       --out PJL_chr6_nSL_score
+     ```
+  3. Repeat for each chromosome and population (PJL, BEB, ITU, GIH).
+
+## Step 12: Process nSL Output
+- **Output**: e.g., `BEB_chr3_nSL_score.nsl.out`
+- Convert to a readable format (e.g., `.xlsx`), adding columns:
+  - `<chr> <position> <'1' freq> <sl1> <sl0> <unstandardized nSL>`
+
+## Step 13: Filter nSL Results for T2D SNPs
+- **Script**: `filter_nSL_file_t2d_chromome_pos.py`
+- **Purpose**: Retain only the T2D-associated positions in the nSL output.
+  ```bash
+  python3 filter_nSL_file_t2d_chromome_pos.py
+  ```
+
+## Step 14: Merge Filtered nSL Outputs
+- **Script**: `combine_filtered_NSL_output.py`
+- **Purpose**: Combine per-chromosome results for each population into a single file.
+
+## Step 15: Annotate nSL Results with rsIDs
+- **Scripts**:
+  - `annotate_nSL_files_with_rsIDs.py`
+  - `remove_duplicates_from_nSL.py`
+- **Purpose**: Map rsIDs and remove duplicates in nSL outputs.
+  ```bash
+  python3 annotate_nSL_files_with_rsIDs.py
+  python3 remove_duplicates_from_nSL.py
+  ```
+
+## Step 16: Permutation Test for Positive Selection
+- **Script**: `permutation test code.txt`
+- **Purpose**: Assess significance of observed nSL scores by comparing to a null distribution.
+- **Method**:
+  1. Shuffle nSL scores for **1000 permutations**.
+  2. Calculate a test statistic (e.g., mean, max).
+  3. Determine p-values based on permutation-based null distribution.
+- **Dependencies**: `numpy`
+
+## Step 17: Normalisation of Selection Signals
+- **Purpose**: Standardize selection statistics to enhance the visibility of outliers.
+- **Method**:
+  - Apply **Z-score transformation** to nSL (and optionally FST) values.
+  - Facilitate cross-population comparisons.
+  - Improve clarity in visualizations (e.g., Manhattan plots).
+
+---
+
+# Notes
+- **Filtering SNPs by Genomic Positions** may require a **Liftover** step if your GWAS data uses a different reference assembly (e.g., GRCh37 vs GRCh38).  
+- **Parallelization** is highly recommended for computationally heavy steps like **selscan** or **bcftools** tasks.
+- Update any scripts with your file paths, sample IDs, and naming conventions.
+
+# Contact
+For questions or issues regarding this pipeline, please open an **Issue** in this repository or contact the contributors directly.
+
+---
