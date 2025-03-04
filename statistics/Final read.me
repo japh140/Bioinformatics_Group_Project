@@ -38,7 +38,6 @@ This repository contains a comprehensive **end-to-end pipeline** for identifying
 
 Ensure you have the following dependencies installed:  
 
-```bash
 bcftools
 htslib
 vcftools
@@ -48,10 +47,9 @@ selscan
 
 Install missing packages using:  
 
-```bash
+
 sudo apt install bcftools htslib vcftools
 pip install numpy
-```
 
 ---
 
@@ -69,10 +67,10 @@ DIAMANTE2022T2DGWASassociations.csv
 
 ### **Step 2: Download 1000 Genomes Data**  
 📌 **Download autosomal VCF files (chromosomes 1-22):**  
-```bash
+
 wget -r -np -nH --cut-dirs=5 -R index.html \
 "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/"
-```
+
 🧬 **These serve as reference panels for South Asian & European populations.**  
 
 ---
@@ -82,22 +80,20 @@ wget -r -np -nH --cut-dirs=5 -R index.html \
 🎯 **Objective:** Extract population-specific samples (e.g., **BEB, GIH, ITU, STU, CEU**)  
 
 🔹 **Method:**  
-```bash
+
 bcftools view -S sampleID.txt -Oz -o filtered_population.vcf.gz input.vcf.gz
-```
 
 🔹 **Parallel Processing (Chromosomes 1-22):**  
-```bash
+
 for chr in {1..22}; do
     bcftools view -S sampleID.txt -Oz -o chr${chr}_filtered.vcf.gz chr${chr}.vcf.gz
 done
-```
 
 ---
 
 ### **Step 4: Extract Chromosome Positions**  
 🛠 **Script:** `extract_chrom_positions.py`  
-```bash
+
 python3 extract_chrom_positions.py
 ```
 🔹 **Output:** `t2d_chrom_position.txt` (used to filter VCF files)  
@@ -106,7 +102,7 @@ python3 extract_chrom_positions.py
 
 ### **Step 5: Filter SNPs from Autosomal VCF Files**  
 🛠 **Command:**  
-```bash
+
 ls ALL.chr*.vcf.gz | parallel -j 4 'vcftools --gzvcf {} \
   --positions t2d_chrom_position.txt --recode --out {/.}_filtered'
 ```
@@ -115,7 +111,7 @@ ls ALL.chr*.vcf.gz | parallel -j 4 'vcftools --gzvcf {} \
 ---
 
 ### **Step 6: Merge Filtered VCF Files**  
-```bash
+
 bcftools concat ALL.chr*.vcf_filtered.recode.vcf -O z -o all_chromosomes.vcf.gz
 ```
 🔹 **Output:** `all_chromosomes.vcf.gz` (Merged T2D-associated SNPs)  
@@ -124,7 +120,7 @@ bcftools concat ALL.chr*.vcf_filtered.recode.vcf -O z -o all_chromosomes.vcf.gz
 
 ### **Step 7: Annotate VCF with rsIDs**  
 🛠 **Script:** `annotate_merged_vcf_withsnps.py`  
-```bash
+
 python3 annotate_merged_vcf_withsnps.py
 ```
 🔹 **Output:** `snps_annotated_all_chromosomes.vcf.gz`  
@@ -132,7 +128,7 @@ python3 annotate_merged_vcf_withsnps.py
 ---
 
 ### **Step 8: Calculate FST (Fixation Index)**  
-```bash
+
 vcftools --gzvcf snps_annotated_all_chromosomes.vcf.gz \
   --weir-fst-pop Punjabi_sampleID.txt \
   --weir-fst-pop CEU_samples.txt \
@@ -173,17 +169,5 @@ normalised_values = normalise_zscore(selection_signals)
 - **Functional Annotations** - [Gene Ontology](https://geneontology.org/)  
 
 ---
-
-## 👥 Contributors  
-
-- **[Your Name]** - Project Lead  
-- **[Teammates]** - Contributors  
-
-📌 **Contact:** For queries, open an issue or reach out via email.  
-
----
-
-## ⭐ Acknowledgements  
-This project is part of the **MSc Bioinformatics Software Development Group Project 2025** at QMUL.  
 
 🚀 **If you find this repository useful, give it a star!** ⭐  
