@@ -1,5 +1,5 @@
 **Description:**  
-This file contains statistical analyses and data processing steps related to population genetics. It includes statistical tests such as **nSL (number of Segregating sites by Length) and FST (Fixation Index)** to detect selection signals. Additionally, it covers **data filtering, normalisation, and multiple testing corrections**, ensuring high-quality genomic analysis.
+This file contains statistical analyses and data processing steps related to population genetics. It includes statistical tests such as **nSL (number of Segregating sites by Length) and FST (Fixation Index)** to detect selection signals. Additionally, it covers **data filtering, normalisation, and permutations tests **, ensuring high-quality genomic analysis.
 
 # Statistical Analysis for T2D Susceptibility Project
 
