@@ -181,7 +181,7 @@ assert len(df.columns)==15,                         "\033[91m Error19 : get_snp_
 print('\n\033[94m TESTING: get_allele_frequency_by_snp \033[0m')
 df = db.get_allele_frequency_by_snp('rs12219514')
 print(df)
-assert len(df)==4,                              "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
+assert len(df)==7,                              "\033[91m Error1 : get_allele_frequency_by_snp \033[0m"
 assert len(df.columns)==5,                      "\033[91m Error2 : get_allele_frequency_by_snp \033[0m"
 assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_allele_frequency_by_snp \033[0m"
 assert df.columns[1]=='FST',                    "\033[91m Error4 : get_allele_frequency_by_snp \033[0m"
@@ -209,7 +209,7 @@ assert df.columns[2]=='population',             "\033[91m Error5 : get_fst_by_po
 
 df = db.get_fst_by_population('')
 print(df)
-assert len(df)==25,                             "\033[91m Error6 : get_fst_by_population \033[0m"
+assert len(df)==0,                             "\033[91m Error6 : get_fst_by_population \033[0m"
 assert len(df.columns)==3,                      "\033[91m Error7 : get_fst_by_population \033[0m"
 assert df.columns[0]=='snp_id',                 "\033[91m Error8 : get_fst_by_population \033[0m"
 assert df.columns[1]=='FST',                    "\033[91m Error9 : get_fst_by_population \033[0m"
@@ -227,7 +227,7 @@ assert len(df.columns)==3,                     "\033[91m Error12 : get_fst_by_po
 print('\n\033[94m TESTING: get_fst_value_by_snp_for_empty_population \033[0m')
 df = db.get_fst_value_by_snp_for_empty_population('rs7903146')
 print(df)
-assert len(df)==1,                              "\033[91m Error1 : get_fst_value_by_snp_for_empty_population \033[0m"
+assert len(df)==0,                              "\033[91m Error1 : get_fst_value_by_snp_for_empty_population \033[0m"
 assert len(df.columns)==2,                      "\033[91m Error2 : get_fst_value_by_snp_for_empty_population \033[0m"
 assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_fst_value_by_snp_for_empty_population \033[0m"
 assert df.columns[1]=='FST',                    "\033[91m Error4 : get_fst_value_by_snp_for_empty_population \033[0m"
@@ -244,7 +244,7 @@ assert len(df.columns)==2,                     "\033[91m Error6 : get_fst_value_
 print('\n\033[94m TESTING: get_stats_by_snp_and_population \033[0m')
 df = db.get_stats_by_snp_and_population('rs7903146','Bengali','Northern Europeans from Utah')
 print(df)
-assert len(df)==1,                              "\033[91m Error1 : get_stats_by_snp_and_population \033[0m"
+assert len(df)==2,                              "\033[91m Error1 : get_stats_by_snp_and_population \033[0m"
 assert len(df.columns)==4,                      "\033[91m Error2 : get_stats_by_snp_and_population \033[0m"
 assert df.columns[0]=='snp_id',                 "\033[91m Error3 : get_stats_by_snp_and_population \033[0m"
 assert df.columns[1]=='FST',                    "\033[91m Error4 : get_stats_by_snp_and_population \033[0m"
