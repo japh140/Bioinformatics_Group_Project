@@ -27,11 +27,9 @@ X Chromosome Removal: Restricts analysis to autosomal SNPs.
 Purpose: Selects SNPs located in predefined T2D-associated genomic regions.
 Script: Filter by SNP positions.txt
 Method:
-Uses a BED file to extract SNPs in specific genomic regions.
-Processes seven populations in parallel.
-Utilises bcftools view -R for targeted filtering.
-Ensures efficient indexing of output files.
-4. Permutation Test for Positive Selection Signals
+###BURHAN ADD HERE
+.
+5. Permutation Test for Positive Selection Signals
 Purpose: Generates a null distribution by randomly shuffling nSL scores to assess statistical significance.
 Script: permutation test code.txt
 Method:
@@ -39,7 +37,7 @@ Performs 1000 permutations of nSL scores.
 Computes a test statistic (e.g., mean or max) for each permutation.
 Used to evaluate whether observed selection signals are significant.
 Dependencies: numpy
-5. Normalisation of Selection Signals
+6. Normalisation of Selection Signals
 Purpose: Standardises selection statistics to improve the visibility of selection signals.
 Method:
 Applies Z-score transformation to nSL.
