@@ -53,6 +53,8 @@ def plot_fst():
                      labels={"FST": "FST Value", "SNP ID": "SNPs", "Population": "Population"})
         fig.update_layout(title="FST Values for Selected SNPs by Population", xaxis_title="SNP ID", yaxis_title="FST Value")
 
+        fig.add_hline(y=0.05, line_dash="dash", line_color="black")
+
         # Convert the Plotly figure to HTML for embedding
         plot_html = fig.to_html(full_html=False)
 
@@ -100,6 +102,9 @@ def plot_nsl():
         fig = px.bar(df, x="SNP ID", y="nSL", color="Population", barmode="group",
                      labels={"nSL": "nSL Value", "SNP ID": "SNPs", "Population": "Population"})
         fig.update_layout(title="nSL Values for Selected SNPs by Population", xaxis_title="SNP ID", yaxis_title="nSL Value")
+
+        fig.add_hline(y=1, line_dash="dash", line_color="black")
+        fig.add_hline(y=-1, line_dash="dash", line_color="black")
 
         # Convert the Plotly figure to HTML for embedding
         plot_html = fig.to_html(full_html=False)
