@@ -42,7 +42,7 @@ Dependencies: numpy
 5. Normalisation of Selection Signals
 Purpose: Standardises selection statistics to improve the visibility of selection signals.
 Method:
-Applies Z-score transformation to nSL and FST values.
+Applies Z-score transformation to nSL.
 Ensures comparability across different populations.
 Enhances visualisation of selection signals.
 Requirements
