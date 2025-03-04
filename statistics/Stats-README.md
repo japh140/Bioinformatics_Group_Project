@@ -25,7 +25,8 @@ Sorting Check: Ensures SNPs are correctly ordered.
 X Chromosome Removal: Restricts analysis to autosomal SNPs.
 3. Filtering SNPs by Genomic Positions
 Purpose: Selects SNPs located in predefined T2D-associated genomic regions.
-Script: Filter by SNP positions.txt
+Script: Filter by SNP positions.txt ( Liftover was utilised to make sure postions from another reference genome mathched our
+GrCh37 genome
 Method:
 ###BURHAN ADD HERE
 .
