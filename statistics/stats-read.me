@@ -157,15 +157,13 @@ Produces a reduced nSL table with only your variants of interest.
 Step 14: Merge the Filtered nSL Output Files
 If you generated separate files per population or chromosome, combine them:
 
-
 python scripts:
 python3 combine_filtered_NSL_output.py
 Produces a single combined nSL result table across all chromosomes/populations.
 
+
 Step 15: Annotate nSL Results with rsIDs & Remove Duplicates
 Finally, map the chr:position to rsID:
-
-
 
 python scripts:
 python3 annotate_nSL_files_with_rsIDs.py
