@@ -24,6 +24,7 @@ https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 These files include all autosomes (chr1 to chr22), plus sex chromosomes (if needed).
 
 Extract and Filter T2D SNPs
+
 Step 3: Extract Chromosome Positions
 A custom Python script is used to pull out chromosome:position information from the T2D‐associated SNP datasets.
 
@@ -154,6 +155,7 @@ If you generated separate files per population or chromosome, combine them:
 python scripts:
 python3 combine_filtered_NSL_output.py
 Produces a single combined nSL result table across all chromosomes/populations.
+
 Step 14: Annotate nSL Results with rsIDs & Remove Duplicates
 Finally, map the chr:position to rsID:
 
