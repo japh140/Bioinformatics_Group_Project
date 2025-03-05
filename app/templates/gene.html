@@ -12,13 +12,11 @@
         </a>
     </div>
 
-    <!-- Gene details container styled with .results-container -->
     <div class="results-container">
         <h1>Gene Details: {{ gene_symbol }}</h1>
 
         {% if gene_info %}
             {% for info in gene_info %}
-                <!-- Gene info item styled with .result-item -->
                 <div class="result-item">
                     <p><strong>Gene Symbol:</strong> {{ info.gene_symbol }}</p>
                     <p><strong>Gene ID:</strong> {{ info.gene_id }}</p>
@@ -31,7 +29,6 @@
             <p>No details found for this gene.</p>
         {% endif %}
 
-        <!-- Back link styled with .back-link -->
         <a href="/" class="back-link">Back to Search</a>
     </div>
 </body>

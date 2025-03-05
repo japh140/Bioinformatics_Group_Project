@@ -3,7 +3,7 @@
 <head>
     <title>Population Statistics Comparison</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Add jQuery for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for AJAX -->
 </head>
 <body>
     <div class="header">
@@ -26,10 +26,9 @@
             </div>
         {% endif %}
 
-        <!-- Population selection form -->
+        <!-- population selection form -->
         <h3>Select Populations to Compare:</h3>
         <form id="population-form" action="{{ url_for('snp_query.population_comparison') }}" method="POST">
-            <!-- All populations are checked by default -->
             <label><input type="checkbox" name="selected_population" value="Bengali" checked class="population-checkbox"> Bengali</label>
             <label><input type="checkbox" name="selected_population" value="Gujarati" checked class="population-checkbox"> Gujarati</label>
             <label><input type="checkbox" name="selected_population" value="Punjabi" checked class="population-checkbox"> Punjabi</label>
@@ -37,7 +36,7 @@
             <button type="submit" style="display: none;">Submit Selection</button>
         </form>
 
-        <!-- Table for population descriptions (dynamic) -->
+        <!-- table for population descriptions -->
         <div id="pop-table">
             <h3>Population Data</h3>
             <table>
@@ -48,27 +47,26 @@
                     </tr>
                 </thead>
                 <tbody id="stats-body-2">
-                    <!-- Table rows will be added dynamically here by JavaScript -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Dynamic Table for FST and nSL -->
+        <!-- table for FST and nSL -->
         <div id="statistics-table">
             <h3>Positive Selection Statistics for Chosen SNPs</h3>
             <table>
                 <thead>
                     <tr>
                         <th>SNP ID</th>
-                        <!-- Headers will be dynamically added here by JavaScript -->
+                        <!-- headers -->
                     </tr>
                     <tr>
                         <th></th>
-                        <!-- Sub-headers will be dynamically added here by JavaScript -->
+                        <!-- sub-headers -->
                     </tr>
                 </thead>
                 <tbody id="fst-body">
-                    <!-- Table rows for each SNP will be inserted here by JavaScript -->
+                    <!-- table rows for each SNP -->
                 </tbody>
             </table>
         </div>
@@ -144,12 +142,13 @@
                 </div>
             </details>
         </div>
-        <!-- Download Button -->
+
+        <!-- download Button -->
         <div class="result-item">
             <button type="button" id="download-button">Download SNP & Population Data</button>
         </div>
         
-        <!-- Dropdown for selecting stat (FST or nSL) -->
+        <!-- dropdown menu for selecting stat (FST or nSL) -->
         <div>
             <label for="stat-select">Select Summary Statistics:</label>
             <select id="stat-select">
@@ -158,17 +157,17 @@
             </select>
         </div>
 
-        <!-- Plot Section -->
+        <!-- plot -->
         <div id="plot-section">
             <h3>Visualisation: Summary Statistics for Selected SNPs</h3>
             <div id="plot-container">
-                <p>Loading plot...</p> <!-- Placeholder for the dynamically loaded plot -->
+                <p>Loading plot...</p> 
             </div>
         </div>
     </div>
 
     <script>
-        // Data for population descriptions (static values for now)
+        // Data for population descriptions 
         const populationDescriptions = {
             "Bengali": "The Bengali population data (BEB) related to Type 2 Diabetes comes from the 1000 Genomes Project (GRCh38), sampled from Bangladesh.",
             "Gujarati": "The Gujarati population data (GIH) related to Type 2 Diabetes comes from the 1000 Genomes Project (GRCh38), sampled from India.",
@@ -212,7 +211,7 @@
 
             // Add new headers for selected populations
             selectedPopulations.forEach(pop => {
-                // Add population header (spanning FST and nSL columns)
+                // Add population header
                 const populationHeader = document.createElement('th');
                 populationHeader.setAttribute('colspan', '2');
                 populationHeader.innerText = pop;
@@ -234,8 +233,8 @@
             const selectedPopulations = Array.from(document.querySelectorAll('.population-checkbox:checked'))
                 .map(checkbox => checkbox.value);
 
-            // Get the FST and nSL data for the selected populations from the backend
-            const fstData = {{ fst_data | tojson }};  // Pass the fst_data directly to JavaScript
+            // fst_data here is the combined data of FST and nSL from the backend 
+            const fstData = {{ fst_data | tojson }};  
 
             // Clear previous table rows
             const bodyRows = document.getElementById('fst-body');
@@ -254,7 +253,7 @@
                 // For each population, add FST and nSL values
                 selectedPopulations.forEach(pop => {
                     const fstValue = fstData[pop][snpId]?.fst || 'N/A';  // If no data, show 'N/A'
-                    const nslValue = fstData[pop][snpId]?.nsl || 'N/A';  // If no data, show 'N/A'
+                    const nslValue = fstData[pop][snpId]?.nsl || 'N/A';  
 
                     // Create cell for FST
                     const fstCell = document.createElement('td');
@@ -355,7 +354,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'snp_data.txt';  // Specify the file name
+                a.download = 'snp_data.txt';  // File name
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
