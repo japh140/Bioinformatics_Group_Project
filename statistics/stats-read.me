@@ -1,0 +1,140 @@
+This repository contains a comprehensive end-to-end pipeline for identifying and analysing Type 2 Diabetes (T2D)-associated SNPs, with a particular focus on South Asian populations. The pipeline spans data collection, filtering, annotation, and downstream population genetics analyses, including:
+
+Genetic differentiation tests (e.g., FST, nSL)
+
+Permutation testing for statistical significance
+
+Signal normalisation using Z-score transformations
+
+🎯 Project Goals
+
+✔ Identify T2D-associated genetic variants✔ Detect positive selection signals in South Asian populations✔ Develop a robust statistical framework for genomic analysis
+
+📂 Data Sources
+
+T2D-associated SNPs from the T2D Knowledge Portal
+
+1000 Genomes Project autosomal VCF files (Download)
+
+🔬 Key Analyses
+
+✅ SNP selection & annotation✅ Fixation index (FST) and nSL calculations✅ Population-based VCF filtering✅ Permutation testing for significance assessment✅ Z-score normalisation to enhance signal detection
+
+🛠 Requirements
+
+Ensure you have the following dependencies installed:
+
+bcftools
+htslib
+vcftools
+numpy
+selscan
+pandas
+requests
+
+Install missing packages using:  
+
+sudo apt install bcftools htslib vcftools  
+pip install numpy pandas requests  
+
+Pipeline Workflow
+
+Step 1: Collect T2D SNPs
+
+Input: CSV files containing T2D-associated SNPs, e.g.:
+
+T2DGGI2024T2DGWASassociations.csv  
+DIAMANTE2022T2DGWASassociations.csv  
+
+🔹 Extract rsID, chromosome, position, p-value from the T2D Knowledge Portal.
+
+Step 2: Download 1000 Genomes Data
+
+Download autosomal VCF files (chromosomes 1-22):
+
+wget -r -np -nH --cut-dirs=5 -R index.html \  
+"https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/"  
+
+ These serve as reference panels for South Asian & European populations.
+
+Step 3: Extract Chromosome Positions
+
+ Script: extract_chrom_positions.py
+
+python3 extract_chrom_positions.py  
+
+🔹 Output: t2d_chrom_position.txt (used to filter VCF files)
+
+Step 4: Filter SNPs from Autosomal VCF Files
+
+ Command:
+
+ls ALL.chr*.vcf.gz | parallel -j 4 'vcftools --gzvcf {} \  
+  --positions t2d_chrom_position.txt --recode --out {/.}_filtered'  
+
+🔹 Output: ALL.chrX_filtered.recode.vcf
+
+Step 5: Merge Filtered VCF Files
+
+bcftools concat ALL.chr*.vcf_filtered.recode.vcf -O z -o all_chromosomes.vcf.gz  
+
+🔹 Output: all_chromosomes.vcf.gz (Merged T2D-associated SNPs)
+
+Step 6: Annotate VCF with rsIDs
+
+ Script: annotate_merged_vcf_withsnps.py
+
+python3 annotate_merged_vcf_withsnps.py  
+
+🔹 Output: snps_annotated_all_chromosomes.vcf.gz
+
+Step 7: Population-Based VCF Filtering
+
+Script: population_filter.txt🎯 Objective: Extract population-specific samples (e.g., BEB, GIH, ITU, STU, CEU)
+
+🔹 Method:
+
+bcftools view -S sampleID.txt -Oz -o filtered_population.vcf.gz input.vcf.gz  
+
+🔹 Parallel Processing (Chromosomes 1-22):
+
+for chr in {1..22}; do  
+    bcftools view -S sampleID.txt -Oz -o chr${chr}_filtered.vcf.gz chr${chr}.vcf.gz  
+done  
+
+Step 8: Permutation Testing for Positive Selection
+
+Script: permutation_test.ipynb
+
+import numpy as np  
+
+N_permutations = 1000  
+null_distribution = []  
+
+for i in range(N_permutations):  
+    shuffled_nsl = np.random.permutation(df["nSL"])  
+    # statistic() could be the mean, max, or other test metric  
+    null_distribution.append(statistic(shuffled_nsl))  
+
+Goal: Assess statistical significance by comparing observed nSL scores to a null distribution.
+
+Step 9: Normalisation of Selection Signals
+
+ Goal: Enhance outlier detection and facilitate cross-population comparisons🛠 Method: Z-score transformation applied to nSL and optionally FST values.
+
+Script: Normalisation.ipynb
+
+import numpy as np  
+
+def normalise_zscore(data):  
+    return (data - np.mean(data)) / np.std(data)  
+
+normalised_values = normalise_zscore(selection_signals)  
+
+ Notes & Considerations
+
+-Liftover: Ensure genomic positions match reference assembly (GRCh37 vs. GRCh38).
+-Parallelisation: Recommended for computationally intensive steps (e.g., selscan).
+Script Adjustments: Update file paths, sample IDs, and variable names accordingly.
+
+
