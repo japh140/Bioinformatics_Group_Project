@@ -22,8 +22,8 @@ snps_dataset["CHROM"] = snps_dataset["CHROM"].astype(str)
 populations = ["PJL", "BEB", "ITU", "GIH"]  
 
 # Process Each Population one at a time
-for pop in populations:
-    fst_file = f"Fst_results_{pop}_CEU.xlsx"  # this brings Fst results file for all populations
+for pp in populations:
+    fst_file = f"Fst_results_{pp}_CEU.xlsx"  # this brings Fst results file for all populations
     
     # Load Fst results
     fst_df = pd.read_excel(fst_file, engine="openpyxl")
@@ -35,7 +35,7 @@ for pop in populations:
     annotated_fst_df = fst_df.merge(snps_dataset[["CHROM", "POS", "SNP_ID"]], on=["CHROM", "POS"], how="left")
 
     # Save annotated Fst Results files
-    output_file = f"Fst_results_{pop}_CEU_annotated.xlsx"
+    output_file = f"Fst_results_{pp}_CEU_annotated.xlsx"
     annotated_fst_df.to_excel(output_file, index=False, engine="openpyxl")
 
     print("Fst results files are annorated with rsIDs)
