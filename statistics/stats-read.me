@@ -68,7 +68,7 @@ Use a Python script to extract Sample ID list for 4 South Asian population and o
 python3 create_subpopl_sample_list.py
 
 
-Step 7: Population-Based VCF Filtering (Post T2D Filter)
+Step 8: Population-Based VCF Filtering (Post T2D Filter)
 After obtaining a T2D‐specific VCF, filter for your target populations (e.g., 4 South Asian populations: PJL, BEB, ITU, GIH; plus one European, CEU).
 
 Script: population_filter.txt (example)
@@ -84,27 +84,28 @@ for chr in {1..22}; do
 done
 sampleID.txt contains the list of individuals belonging to that population.
 Repeat for each population you wish to isolate.
+
 FST Analysis
 
-Step 8: Calculate FST
+Step 9: Calculate FST
 We use VCFtools to calculate Weir & Cockerham’s FST for each South Asian population vs. the European population. For each population pair:
 
 bash:
 
 vcftools --gzvcf snps_annotated_all_chromosomes.vcf.gz \
   --weir-fst-pop Punjabi_sampleID.txt \
-  --weir-fst-pop CEU_samples.txt \
+  --weir-fst-pop CEPH_sampleID.txt \
   --out Fst_results_Punjabi_CEU
 
 vcftools --gzvcf snps_annotated_all_chromosomes.vcf.gz \
   --weir-fst-pop Gujarati_sampleID.txt \
-  --weir-fst-pop CEU_samples.txt \
+  --weir-fst-pop CEPH_sampleID.txt \
   --out Fst_results_Gujarati_CEU
 
 ... etc. ...
 This produces output files (e.g., Fst_results_Bengali_CEU.weir.fst).
 
-Step 9: Processing & Annotating FST Output
+Step 10: Processing & Annotating FST Output
 Convert the .weir.fst output into a more convenient format (e.g., XLSX).
 Add rsIDs by running your Python annotation scripts. For example:
 
@@ -115,7 +116,7 @@ You should now have FST results that are easily comparable across populations an
 nSL Analysis
 nSL measures haplotype‐based selection by looking at the length of haplotypes around a variant.
 
-Step 10: Calculate nSL Scores
+Step 11: Calculate nSL Scores
 We use selscan for nSL. For each population (PJL, BEB, ITU, GIH) and each chromosome:
 
 bash:
@@ -141,19 +142,19 @@ done
 
 
 Each chromosome+population run produces files like PJL_chr6_nSL_score.nsl.out.
-Step 11: Process nSL Output Files
+Step 12: Process nSL Output Files
 The .nsl.out file often lacks column headers, so you may wish to convert it to .xlsx or CSV and add a header:
 
 chr  position  freq_1  sl1  sl0  unstandardized_nSL
 (If the chromosome column is missing, fill it accordingly.)
 
-Step 12: Filter nSL Results for T2D-Associated SNPs
+Step 13: Filter nSL Results for T2D-Associated SNPs
 Filter these nSL outputs to keep only the T2D‐associated SNP positions. For instance:
 
 python scripts:
 python3 filter_nSL_file_t2d_chromome_pos.py
 Produces a reduced nSL table with only your variants of interest.
-Step 13: Merge the Filtered nSL Output Files
+Step 14: Merge the Filtered nSL Output Files
 If you generated separate files per population or chromosome, combine them:
 
 
@@ -161,7 +162,7 @@ python scripts:
 python3 combine_filtered_NSL_output.py
 Produces a single combined nSL result table across all chromosomes/populations.
 
-Step 14: Annotate nSL Results with rsIDs & Remove Duplicates
+Step 15: Annotate nSL Results with rsIDs & Remove Duplicates
 Finally, map the chr:position to rsID:
 
 
@@ -174,7 +175,7 @@ The final result is a table of nSL values for T2D‐associated SNPs, annotated w
 
 Additional Positive Selection Steps
 
-Step 15: Permutation Testing for Positive Selection
+Step 16: Permutation Testing for Positive Selection
 To assess whether the observed nSL signals are significantly high (or low) compared to a random expectation, you can run a permutation test:
 
 Script: permutation test code
@@ -204,7 +205,7 @@ print("Permutation-based p-value:", p_value)
 
 In practice, you might use max, median, or another test statistic. Larger numbers of permutations (≥10,000) strengthen confidence in p-values.
 
-Step 16: Normalisation of Selection Signals
+Step 17: Normalisation of Selection Signals
 To facilitate cross‐population comparisons or highlight outliers, you can z‐score transform nSL (or FST) values:
 
 python script: 
