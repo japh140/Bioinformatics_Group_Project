@@ -9,7 +9,7 @@ def gene_details(gene_symbol):
         df = db.get_gene_annotations_by_gene_symbol(gene_symbol)
         
         if df is not None and not df.empty:
-            # Drop duplicates
+            # drop duplicates
             df = df.drop_duplicates(subset='gene_symbol', keep='first')  
 
             gene_info = df.to_dict('records')

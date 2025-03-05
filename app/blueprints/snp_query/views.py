@@ -140,24 +140,25 @@ def search_results(search_type, search_term):
                                error_message="Error processing search. Please try again later.")
 
 
+
+# Stats Table 
 @snp_bp.route('/population-comparison', methods=['POST'])
 def population_comparison():
     try:
-        # Step 1: Retrieve SNP IDs and selected populations from the form submission
+        # retrieve SNP IDs from results template and population list from population comparison template 
         snp_ids = request.form.getlist('snp_ids') 
         selected_populations = request.form.getlist('selected_population')  
 
         if not snp_ids:
             raise ValueError("No SNP IDs provided.")
         
-        # If no population is selected, default to all populations
         if not selected_populations:
             selected_populations = ['Bengali', 'Gujarati', 'Punjabi', 'Telugu']
 
         if not selected_populations:
             raise ValueError("No population selected.")
 
-        # Step 2: Fetch FST and NSL values for each SNP ID and selected population
+        # fetch FST and nSL values from the database 
         combined_data = {}
         
         for population in selected_populations:
@@ -165,7 +166,6 @@ def population_comparison():
             for snp_id in snp_ids:
                 stats_df = db.get_stats_by_snp_and_population(snp_id, population, 'Northern Europeans from Utah')
 
-                # Process the FST and NSL data
                 if stats_df is not None and not stats_df.empty:
                     fst_value = stats_df['FST'].values[0] if stats_df['FST'].values[0] != 'N/A' else 'N/A'
                     nsl_value = stats_df['NSL'].values[0] if stats_df['NSL'].values[0] != 'N/A' else 'N/A'
@@ -173,29 +173,27 @@ def population_comparison():
                 else:
                     combined_data[population][snp_id] = {"fst": 'N/A', "nsl": 'N/A'}
 
-        # Check if any valid data was found
+
         valid_data = any(
             value['fst'] != 'N/A' for population in combined_data for value in combined_data[population].values()
         )
         
-        # If no valid data exists, raise an error to notify the user
+        # raise error if no valid data found 
         if not valid_data:
             print("Warning: No valid FST data found for the selected SNPs and populations.")
-
+        
+        # store stats data and snp list in session
         session['stats_data'] = combined_data
         session['snp_ids'] = snp_ids
 
-        # Step 3: Render the population_comparison.html template directly with the FST and NSL data
+        # send stats data (fst_data) to frontend 
         return render_template('homepage/population_comparison.html', 
                               fst_data=combined_data, 
                               snp_ids=snp_ids)
 
     except Exception as e:
-
-        # Handle error and provide user-friendly message
         return render_template('homepage/population_comparison.html', 
                                message=f"Error: {str(e)}. Please try again later.")
-
 
 
 
@@ -203,22 +201,20 @@ def population_comparison():
 @snp_bp.route('/download-snp-data', methods=['POST'])
 def download_snp_data():
     try:
-        # Step 1: Retrieve data from the session
-        fst_data = session.get('stats_data', {})  # Combined FST and nSL data
-        snp_ids = session.get('snp_ids', [])    # List of SNP IDs
+        # retrieve stats and snp data from the session
+        fst_data = session.get('stats_data', {})  # combined FST and nSL data
+        snp_ids = session.get('snp_ids', [])  
         request_data = request.get_json()
-        selected_populations = request_data.get('selected_populations')  # Selected populations
+        selected_populations = request_data.get('selected_populations')  # retrived from population_comparison template 
 
         if not fst_data or not snp_ids or not selected_populations:
             raise ValueError("No data found in session.")
 
-        # Step 2: Prepare the table data
-        output = io.StringIO()  # Use StringIO for text-based content
+        output = io.StringIO()  
 
-        # Write the table header
+        # headers
         output.write("SNP ID\tChromosome\tPosition\tP-value\tMapped Genes\tPhenotype\tPopulation\tFST Value\tnSL Value\n")
 
-        # Fetch and write data for each SNP ID and population
         for snp_id in snp_ids:
             snp_info = db.get_snp_by_id(snp_id)  
             if snp_info is None or snp_info.empty:
@@ -226,16 +222,15 @@ def download_snp_data():
 
             snp_details = snp_info.iloc[0]
 
-            # Process mapped genes to remove commas
+            # remove commas from mapped genes 
             mapped_genes = snp_details.get('mapped_gene', [])
             if isinstance(mapped_genes, list):
                 mapped_genes_str = ' '.join(mapped_genes) 
             else:
                 mapped_genes_str = str(mapped_genes)  
 
-            # Write data for each population
+
             for population in selected_populations:
-                # Get FST and nSL values for the current SNP and population
                 fst_value = fst_data.get(population, {}).get(snp_id, {}).get('fst', 'N/A')
                 nsl_value = fst_data.get(population, {}).get(snp_id, {}).get('nsl', 'N/A')
 
@@ -251,7 +246,7 @@ def download_snp_data():
                     f"{nsl_value}\n"   
                 )
 
-        # Step 3: Calculate average and standard deviation of FST and nSL values
+        # calculate average and standard deviation of FST and nSL values
         fst_values = [
             fst_data[population][snp_id]['fst']
             for population in selected_populations
@@ -270,15 +265,14 @@ def download_snp_data():
         average_nsl = np.mean(nsl_values) if nsl_values else 0
         std_dev_nsl = np.std(nsl_values) if nsl_values else 0
 
-        # Step 4: Append statistics to the output in the specified format
+        # output
         output.write("\n")  
-        output.write("\t\t\t\t\t\t\tFST\tnSL\n")  # Header for statistics
+        output.write("\t\t\t\t\t\t\tFST\tnSL\n")  
         output.write(f"Mean\t\t\t\t\t\t\t{average_fst:.4f}\t{average_nsl:.4f}\n")
         output.write(f"Standard Deviation\t\t\t\t\t{std_dev_fst:.4f}\t{std_dev_nsl:.4f}\n")
 
         output.seek(0)  
 
-        # Step 5: Send the plain text file as a download
         return send_file(
             io.BytesIO(output.getvalue().encode()),
             mimetype='text/plain', 
