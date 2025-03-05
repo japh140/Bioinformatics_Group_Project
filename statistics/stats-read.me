@@ -18,8 +18,6 @@ Combine or keep them separate as needed for downstream filtering.
 
 Step 2: Obtain 1000 Genomes VCF Files
 Download the 1000 Genomes (phase 3) VCF files from:
-
-bash script: 
 https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 These files include all autosomes (chr1 to chr22), plus sex chromosomes (if needed).
 
@@ -61,7 +59,14 @@ Use a Python script to cross‐reference your filtered VCF with the known SNP‐
 python:
 
 python3 annotate_merged_vcf_withsnps.py
-Output might be snps_annotated_all_chromosomes.vcf.gz, now containing proper rsID tags.
+Output will be snps_annotated_all_chromosomes.vcf.gz, now containing proper rsID tags.
+
+Step 7: Extracting sample ID lists for South Asian and Central Europoean in 1000 Genome
+Download the population metadata from 1000 Genome project 
+Use a Python script to extract Sample ID list for 4 South Asian population and one Central European population
+
+python3 create_subpopl_sample_list.py
+
 
 Step 7: Population-Based VCF Filtering (Post T2D Filter)
 After obtaining a T2D‐specific VCF, filter for your target populations (e.g., 4 South Asian populations: PJL, BEB, ITU, GIH; plus one European, CEU).
